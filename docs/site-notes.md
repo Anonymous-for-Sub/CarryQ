@@ -7,7 +7,12 @@ One MuJoCo workcell contains two Franka Panda arms and two insertion tasks:
 
 Select one task or both, then **Play**. **Pause / Resume** controls simulation;
 **Reset** restores the workcell. The view menu offers the workcell and two
-close-ups. Drag to orbit and scroll to zoom.
+close-ups, two fixed global cameras (one per task), and a wrist camera on each
+hand. Drag to orbit and scroll to zoom in the workcell and close-up views.
+Global cameras remain fixed in world coordinates; wrist cameras remain rigid
+in hand coordinates. The sensor views are not orbitable. Camera housings and
+stands are visual only and do not change the task dynamics. Fields of view
+are nominal illustration settings, not physical sensor calibration.
 
 The upper-right heading identifies CarryQ, the paper title and the current task.
 Before insertion, the arm approaches with a small lateral offset, centers above

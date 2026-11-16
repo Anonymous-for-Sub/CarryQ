@@ -26,6 +26,7 @@ import {
   smooth,
 } from "./task.js";
 import { Cables } from "./Cables.jsx";
+import { TaskCameras } from "./TaskCameras.jsx";
 import "./style.css";
 
 const config = {
@@ -38,6 +39,7 @@ function Camera({ view }) {
   const { camera, size } = useThree();
   const controls = useRef();
   useEffect(() => {
+    if (view.startsWith('global-') || view.startsWith('wrist-')) return;
     const t = TASKS.find((t) => t.key === view);
     const target = t ? [t.x, t.y, t.mouth + 0.025] : [0.25, 0, 0.28];
     camera.position.set(
@@ -55,6 +57,7 @@ function Camera({ view }) {
       if (!t) target[2] += 0.2;
     }
     camera.near = 0.002;
+    camera.fov = 42;
     camera.updateProjectionMatrix();
     controls.current?.target.set(...target);
     controls.current?.update();
@@ -63,6 +66,7 @@ function Camera({ view }) {
     <OrbitControls
       ref={controls}
       makeDefault
+      enabled={!view.startsWith('global-') && !view.startsWith('wrist-')}
       enableDamping
       minDistance={0.05}
       maxDistance={5}
@@ -113,7 +117,9 @@ function Controller({ command, onStatus, onFinish, onReady, onTask }) {
       queue: [],
       phase: "ready",
       model,
+      captured: new Set(),
     };
+    if (new URLSearchParams(location.search).has('capture')) window.__captureStates = [];
     onReady(true);
     onStatus("Ready · Choose a task and press Play");
     return () => {
@@ -213,6 +219,22 @@ function Controller({ command, onStatus, onFinish, onReady, onTask }) {
       ]);
       return { task: a.task.key, tip, ...fit };
     });
+    if (window.__captureStates && s.active) {
+      const elapsed = data.time - s.start;
+      const marks = [
+        ['approach', 3.96, 'Approach'], ['register', 1.96, 'Coarse alignment'],
+        ['correct', .6, 'Lateral correction'], ['correct', 1.17, 'Centered'],
+        ['align', 1.17, 'Pre-insertion'], ['insert', 2.0, 'Insertion'],
+        ['settle', .98, 'Seated'],
+      ];
+      marks.forEach(([phase, delay, label], index) => {
+        const key = `${s.armIndex}-${index}`;
+        if (s.phase === phase && elapsed >= delay && !s.captured.has(key)) {
+          s.captured.add(key);
+          window.__captureStates.push({ task: s.arms[s.armIndex].task.key, index, label, phase, measured: measured[s.armIndex], snapshot: sim.api.saveState() });
+        }
+      });
+    }
     if (data.time - lastReport.current > 0.1) {
       lastReport.current = data.time;
       window.__insertion = {
@@ -310,6 +332,7 @@ function App() {
         >
           <Camera view={view} />
           <Cables />
+          <TaskCameras view={view} />
           <Controller
             command={command}
             onStatus={setStatus}
@@ -378,6 +401,10 @@ function App() {
             <option value="overview">Workcell</option>
             <option value="usb">USB-C close-up</option>
             <option value="charger">Power strip close-up</option>
+            <option value="global-usb">Global 1 · USB-C</option>
+            <option value="global-charger">Global 2 · Power strip</option>
+            <option value="wrist-usb">Wrist · USB-C</option>
+            <option value="wrist-charger">Wrist · Charger</option>
           </select>
         </label>
         <div className="status" role="status">
@@ -407,6 +434,7 @@ function App() {
           <p>
             This task illustration is not a CarryQ policy rollout or an
             experimental result. Drag to orbit, scroll to zoom.
+            Global views are fixed; wrist views move rigidly with each hand.
           </p>
           <a href="./site-notes.md">Scene notes and credits</a>
         </aside>

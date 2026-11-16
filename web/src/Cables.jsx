@@ -44,6 +44,7 @@ export function Cables() {
   useFrame(() => {
     const data = sim.mjDataRef?.current,
       id = hand.current;
+    if (data && data.time < lastTime.current) lastTime.current = -1;
     if (
       !data ||
       id < 0 ||
