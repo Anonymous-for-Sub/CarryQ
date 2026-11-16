@@ -110,9 +110,65 @@ select:focus-visible {
   outline: 2px solid #adcbd4;
   outline-offset: 3px;
 }
+.project-heading {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  width: min(440px, calc(100vw - 405px));
+  text-align: right;
+  color: #303631;
+  pointer-events: none;
+  text-shadow: 0 1px 3px #e8e4d4;
+}
+.project-name {
+  font-size: 25px;
+  line-height: 1.1;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+}
+.project-heading h1 {
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 500;
+  margin: 9px 0 12px;
+}
+.task-name {
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 650;
+  color: #4b554e;
+}
+@media (max-width: 850px) and (min-width: 601px) {
+  .project-heading {
+    right: 16px;
+    width: calc(100vw - 380px);
+  }
+  .project-heading h1 {
+    font-size: 12px;
+  }
+}
 @media (max-width: 600px) {
+  .project-heading {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    text-align: right;
+  }
+  .project-name {
+    font-size: 20px;
+  }
+  .project-heading h1 {
+    font-size: 11px;
+    margin: 5px 0;
+    max-width: 320px;
+    margin-left: auto;
+  }
+  .task-name {
+    font-size: 10px;
+  }
   .panel {
-    top: 10px;
+    top: 116px;
     left: 10px;
     width: 285px;
     padding: 12px;

@@ -25,11 +25,32 @@ export const TASKS = [
   },
 ];
 export const DOWN = { x: 1, y: 0, z: 0, w: 0 };
+export const PHASES = ["approach", "register", "correct", "align", "insert"];
+export const DURATIONS = {
+  approach: 4,
+  register: 2,
+  correct: 1.2,
+  align: 1.2,
+  insert: 4,
+};
+export const PHASE_LABELS = {
+  approach: "Approaching",
+  register: "Aligning · lateral offset",
+  correct: "Fine alignment · centering",
+  align: "Aligned · lowering",
+  insert: "Inserting",
+};
 export const smooth = (t) => {
   const s = Math.max(0, Math.min(1, t));
   return s * s * (3 - 2 * s);
 };
 export function targetFor(task, phase) {
+  if (phase === "approach")
+    return { x: task.x + 0.012, y: task.y - 0.008, z: task.mouth + 0.1 };
+  if (phase === "register")
+    return { x: task.x + 0.004, y: task.y - 0.003, z: task.mouth + 0.018 };
+  if (phase === "correct")
+    return { x: task.x, y: task.y, z: task.mouth + 0.018 };
   const z =
     phase === "insert"
       ? task.mouth - task.depth

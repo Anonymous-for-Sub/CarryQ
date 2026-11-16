@@ -1,10 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import { TASKS, targetFor, measuredFit, smooth } from '../web/src/task.js';
+import { TASKS, PHASES, DURATIONS, targetFor, measuredFit, smooth } from '../web/src/task.js';
 import { fitJointAngleToRange } from '../web/src/selectedIkSolver.js';
 
 for(const task of TASKS){
+  test(`${task.key}: lateral correction stays above the socket before descent`,()=>{
+    const rough=targetFor(task,'register'), centered=targetFor(task,'correct');
+    assert.ok(Math.hypot(rough.x-task.x,rough.y-task.y)>.004);
+    assert.equal(centered.x,task.x);assert.equal(centered.y,task.y);
+    assert.equal(centered.z,rough.z);
+    assert.ok(centered.z>targetFor(task,'align').z);
+    assert.deepEqual(PHASES,['approach','register','correct','align','insert']);
+    assert.ok(Math.abs(Object.values(DURATIONS).reduce((a,b)=>a+b,0)-12.4)<1e-10);
+  });
   test(`${task.key}: approach, alignment and seating are distinct poses`,()=>{
     assert.ok(targetFor(task,'approach').z>targetFor(task,'align').z);
     assert.ok(targetFor(task,'align').z>task.mouth);

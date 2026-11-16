@@ -25,6 +25,10 @@ The two arms start with their tools rigidly attached. Control writes joint actua
 targets; MuJoCo advances joint state and contacts. Success is a geometric seating
 check. This is a task illustration, not a learned policy or electrical simulation.
 
+Each task includes an offset approach, coarse registration, lateral centering,
+final alignment and insertion. The curved cable meshes are presentation geometry
+updated from the connector pose, not a flexible-body cable simulation.
+
 The Panda assets are from MuJoCo Menagerie (Apache-2.0); their license is preserved
 in `public/franka/LICENSE`. The copied model retains the reference application's
 actuator tuning. USB-C and two-blade socket geometry is illustrative rather than

@@ -14,7 +14,18 @@ import {
   findSiteByName,
 } from "mujoco-react";
 import { solveSelectedIk } from "./selectedIkSolver.js";
-import { HOME, TASKS, DOWN, targetFor, measuredFit, smooth } from "./task.js";
+import {
+  HOME,
+  TASKS,
+  DOWN,
+  PHASES,
+  DURATIONS,
+  PHASE_LABELS,
+  targetFor,
+  measuredFit,
+  smooth,
+} from "./task.js";
+import { Cables } from "./Cables.jsx";
 import "./style.css";
 
 const config = {
@@ -30,7 +41,9 @@ function Camera({ view }) {
     const t = TASKS.find((t) => t.key === view);
     const target = t ? [t.x, t.y, t.mouth + 0.025] : [0.25, 0, 0.28];
     camera.position.set(
-      ...(t ? [t.x + 0.19, t.y - 0.24, t.mouth + 0.17] : [1.65, -1.85, 1.65]),
+      ...(t
+        ? [t.x + 0.19, t.y + (t.key === "usb" ? 0.24 : -0.24), t.mouth + 0.17]
+        : [1.65, -1.85, 1.65]),
     );
     if (size.width < size.height) {
       const scale = t ? 1.35 : 2.2;
@@ -58,7 +71,7 @@ function Camera({ view }) {
   );
 }
 
-function Controller({ command, onStatus, onFinish, onReady }) {
+function Controller({ command, onStatus, onFinish, onReady, onTask }) {
   const sim = useMujoco();
   const { mujoco } = useMujocoWasm();
   const state = useRef(null);
@@ -157,10 +170,9 @@ function Controller({ command, onStatus, onFinish, onReady }) {
     s.to = goal;
     s.start = data.time;
     s.phase = phase;
-    s.duration = phase === "approach" ? 4 : phase === "align" ? 3 : 4;
-    onStatus(
-      `${arm.task.name} · ${phase === "approach" ? "Approaching" : phase === "align" ? "Aligning" : "Inserting"}`,
-    );
+    s.duration = DURATIONS[phase];
+    onTask(arm.task.key);
+    onStatus(`${arm.task.name} · ${PHASE_LABELS[phase]}`);
   };
   useBeforePhysicsStep((model, data) => {
     const s = state.current;
@@ -174,8 +186,8 @@ function Controller({ command, onStatus, onFinish, onReady }) {
       for (let j = 0; j < 7; j++)
         data.ctrl[arm.ctrl + j] = s.from[j] + blend * (s.to[j] - s.from[j]);
       if (t >= 1) {
-        if (s.phase === "approach") plan(s, arm, "align", data);
-        else if (s.phase === "align") plan(s, arm, "insert", data);
+        const next = PHASES[PHASES.indexOf(s.phase) + 1];
+        if (next) plan(s, arm, next, data);
         else {
           s.phase = "settle";
           s.start = data.time;
@@ -250,6 +262,7 @@ function App() {
   const [status, setStatus] = useState("Loading Franka models…");
   const [command, setCommand] = useState({ id: 0, task: "both" });
   const [details, setDetails] = useState(false);
+  const [activeTask, setActiveTask] = useState(null);
   const finish = () => {
     setRunning(false);
     setPaused(false);
@@ -258,6 +271,7 @@ function App() {
     setRunning(false);
     setPaused(false);
     setReady(false);
+    setActiveTask(null);
     setStatus("Loading Franka models…");
     setCommand({ id: 0, task });
     setGeneration((g) => g + 1);
@@ -295,11 +309,13 @@ function App() {
           style={{ width: "100%", height: "100%" }}
         >
           <Camera view={view} />
+          <Cables />
           <Controller
             command={command}
             onStatus={setStatus}
             onFinish={finish}
             onReady={setReady}
+            onTask={setActiveTask}
           />
           <color attach="background" args={["#d8d2b5"]} />
           <ambientLight intensity={0.8} />
@@ -317,6 +333,17 @@ function App() {
           />
         </MujocoCanvas>
       </MujocoProvider>
+      <header className="project-heading" aria-label="Project information">
+        <div className="project-name">CarryQ</div>
+        <h1>
+          Beyond Pointwise Accuracy: Temporal Error Structure in Robot Action
+          Tokenization
+        </h1>
+        <div className="task-name">
+          {TASKS.find((t) => t.key === (running ? activeTask : task))?.name ||
+            "USB-C insertion · Charger-to-power-strip insertion"}
+        </div>
+      </header>
       <section className="panel" aria-label="Insertion controls">
         <div className="title">Franka · Precision insertion</div>
         <label>

@@ -37,7 +37,7 @@
     </default>
   </default>
 
-  <asset><mesh name="usb_rounded" file="usb-rounded.obj"/>
+  <asset><mesh name="usb_rounded" file="usb-rounded.obj"/><mesh name="usb_shell_mesh" file="usb-shell.obj"/>
     <material class="panda" name="white" rgba="1 1 1 1"/>
     <material class="panda" name="off_white" rgba="0.901961 0.921569 0.929412 1"/>
     <material class="panda" name="black" rgba="0.25 0.25 0.25 1"/>
@@ -209,7 +209,7 @@
                     <geom mesh="link7_7" material="white" class="visual"/>
                     <geom mesh="link7_c" class="collision"/>
                     <body name="hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
-<site name="tip" pos="0 0 0.145" size="0.001" rgba="0 0 0 0"/><geom name="usb_housing" type="box" pos="0 0 0.115" size="0.007 0.0042 0.022" rgba="0 0 0 0" /><geom name="usb_housing_visual" type="mesh" mesh="usb_rounded" pos="0 0 0.115" rgba="0.92 0.92 0.89 1" contype="0" conaffinity="0"/><geom name="usb_shell" type="box" pos="0 0 0.1405" size="0.004 0.0012 0.0045" rgba="0.57 0.61 0.64 1" /><geom name="usb_cable" type="capsule" fromto="0 0 0.093 0.035 0 0.075" size="0.002" rgba="0.92 0.92 0.89 1" contype="0" conaffinity="0"/>
+<site name="tip" pos="0 0 0.145" size="0.001" rgba="0 0 0 0"/><geom name="usb_housing" type="box" pos="0 0 0.115" size="0.007 0.0042 0.022" rgba="0 0 0 0" /><geom name="usb_housing_visual" type="mesh" mesh="usb_rounded" pos="0 0 0.115" rgba="0.92 0.92 0.89 1" contype="0" conaffinity="0"/><geom name="usb_shell_visual" type="mesh" mesh="usb_shell_mesh" pos="0 0 .1405" rgba="0.57 0.61 0.64 1" contype="0" conaffinity="0"/><geom name="shell_x_-1" type="box" pos="-0.0037 0 .1405" size=".0003 .0012 .0045" rgba="0 0 0 0" /><geom name="shell_y_-1" type="box" pos="0 -0.001 .1405" size=".0034 .0002 .0045" rgba="0 0 0 0" /><geom name="shell_x_1" type="box" pos="0.0037 0 .1405" size=".0003 .0012 .0045" rgba="0 0 0 0" /><geom name="shell_y_1" type="box" pos="0 0.001 .1405" size=".0034 .0002 .0045" rgba="0 0 0 0" /><geom name="strain_relief" type="capsule" fromto="0 0 .093 0 0 .087" size=".0027" rgba="0.92 0.92 0.89 1" contype="0" conaffinity="0"/><geom name="cable_rib_0" type="cylinder" pos="0 0 0.088" size=".0029 .00025" rgba=".77 .78 .76 1" contype="0" conaffinity="0"/><geom name="cable_rib_1" type="cylinder" pos="0 0 0.0896" size=".0029 .00025" rgba=".77 .78 .76 1" contype="0" conaffinity="0"/><geom name="cable_rib_2" type="cylinder" pos="0 0 0.09119999999999999" size=".0029 .00025" rgba=".77 .78 .76 1" contype="0" conaffinity="0"/>
                       <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
                       <geom mesh="hand_0" material="off_white" class="visual"/>
                       <geom mesh="hand_1" material="black" class="visual"/>

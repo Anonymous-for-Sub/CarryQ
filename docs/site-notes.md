@@ -9,6 +9,12 @@ Select one task or both, then **Play**. **Pause / Resume** controls simulation;
 **Reset** restores the workcell. The view menu offers the workcell and two
 close-ups. Drag to orbit and scroll to zoom.
 
+The upper-right heading identifies CarryQ, the paper title and the current task.
+Before insertion, the arm approaches with a small lateral offset, centers above
+the socket, and lowers into alignment. These are scripted joint-control stages,
+not observations from a learned policy. Curved cables follow the connector pose
+for visualization; flexible-cable forces and electrical conduction are not modeled.
+
 ## Simulation
 
 The scene reuses the reference Franka application's Panda MJCF/mesh assets,
