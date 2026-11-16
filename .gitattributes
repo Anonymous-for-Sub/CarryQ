@@ -1,0 +1,7 @@
+# Keep generated site bundles and upstream robot geometry out of source reviews.
+docs/assets/** linguist-generated=true -whitespace
+docs/franka/** linguist-generated=true -whitespace
+docs/licenses/** linguist-generated=true
+web/public/franka/assets/** linguist-vendored=true
+web/public/franka/panda.xml linguist-vendored=true
+web/public/licenses/** linguist-vendored=true

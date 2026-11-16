@@ -1,53 +1,50 @@
-# Precision workcell
+# Franka precision insertion
 
-The site contains one procedural tabletop workcell with two insertion tasks:
+One MuJoCo workcell contains two Franka Panda arms and two insertion tasks:
 
-1. A USB-C plug approaching, aligning with and entering a fixed USB-C receptacle.
-2. A generic rounded white charger aligning two AC blades with a power strip.
-   The USB-C receptacle remains part of the charger body; it is not inserted
-   into the AC outlet.
+1. Insert a USB-C plug into a fixed USB-C receptacle.
+2. Insert the two AC blades of a compact white charger into a power strip.
 
-## Controls
+Select one task or both, then **Play**. **Pause / Resume** controls simulation;
+**Reset** restores the workcell. The view menu offers the workcell and two
+close-ups. Drag to orbit and scroll to zoom.
 
-- **Play both tasks / Pause / Resume:** run or stop the scripted sequence.
-- **Reset:** return both tasks to their initial poses.
-- **Task selection:** choose a station and its close-up camera.
-- **Camera views:** overview, USB-C, charger or top; drag to orbit and scroll to zoom.
-- **Fine adjustment:** change two transverse offsets and the connector angle.
-- **Auto-align:** play a scripted correction to the target pose.
-- **Try insertion:** advance only when the illustrative geometric gate is met.
+## Simulation
 
-The inset follows the active station. On small screens, controls appear below
-the scene. Playback starts only on request and pauses when the tab is hidden.
+The scene reuses the reference Franka application's Panda MJCF/mesh assets,
+MuJoCo React loader, IK solver and compact control-panel design. Joint actuators
+drive the arms, with MuJoCo integration and contact geometry. Socket openings
+are built from separate walls. “Seated” checks simulated tip position and
+orientation after settling; a timeout does not imply success.
 
-## Scope
+Both tools start rigidly attached to their grippers. Pickup, frictional grasping
+and electrical conduction are not simulated. The connector dimensions are
+illustrative rather than certified CAD. This page is a task demonstration,
+not a learned-policy rollout, CarryQ comparison or experimental result.
 
-This is an interactive **kinematic visualization**, not a benchmark or a
-contact-physics simulation. The arms follow analytical geometric poses; the
-parts follow scripted trajectories. Model-space offsets and alignment gates
-are illustrative, not measured robot tolerances. There is no π₀.₅ inference,
-CarryQ comparison, electrical sensing or physical success claim in this page.
-The charger is unbranded and is not an exact product or electrical design.
+## Source and build
 
-## Local preview and publishing
+Source is under `web/`. With Node.js 22.12+:
 
-From the repository root:
-
-```bash
-python -m http.server 8000 --directory docs
+```sh
+cd web
+npm ci
+npm run dev
+npm run build:pages
 ```
 
-Open `http://localhost:8000`. No Node build or remote asset service is required.
-The page uses only relative asset paths and is served by GitHub Pages from
-`main:/docs`. Existing `api.md` and `integration.md` remain available.
+The build writes to `docs/`, served from GitHub Pages at `/CarryQ/`. All robot
+assets and the MuJoCo runtime are served locally with the page. No remote model
+service, external font or analytics is used. Existing API and integration docs
+remain available.
 
-The state-machine tests use Node.js:
+## Credits
 
-```bash
-node --test web-tests/*.test.mjs
-```
+- Franka Panda model and meshes: [MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie/tree/main/franka_emika_panda), [Apache-2.0 license](franka/LICENSE).
+- MuJoCo and MuJoCo React: Apache-2.0.
+- React, React Three Fiber, Drei and Three.js: MIT.
 
-All scene meshes are procedural. Three.js r170 and its OrbitControls and
-RoundedBoxGeometry helpers are included locally under their retained MIT
-[license](assets/vendor/THREE-LICENSE.txt). The page makes no analytics calls
-and loads no external fonts, model files or libraries.
+The Panda model preserves the reference application's actuator tuning. Task
+variants add held objects and tip sites and remove its original home keyframe.
+Third-party license notices are retained; the project MIT license does not
+replace these asset licenses.

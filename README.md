@@ -113,10 +113,10 @@ handling, vector lookup and invalid inputs. See [CONTRIBUTING.md](CONTRIBUTING.m
 ## Project page
 
 [Open the precision workcell](https://anonymous-for-sub.github.io/CarryQ/):
-an interactive 3D scene with USB-C insertion and charger-to-power-strip
-insertion. Orbit the workcell, inspect each interface, play both tasks, or
-try manual fine alignment. This is a scripted kinematic illustration, not
-a policy rollout, contact-physics simulation or experimental result.
+two Franka Panda arms performing USB-C and charger-to-power-strip insertion
+in MuJoCo. Orbit the workcell, inspect each interface in close-up, and play
+either or both tasks. This is a scripted physics demonstration with pre-held
+parts, not a learned-policy rollout or an experimental result.
 
 The static site is served from `docs/`. See [scene notes](docs/site-notes.md)
 for controls and local preview instructions.

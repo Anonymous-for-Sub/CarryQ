@@ -22,3 +22,7 @@ runs/
 results/
 .env
 .env.*
+node_modules/
+web/public/franka/scene.xml
+web/public/franka/usb.xml
+web/public/franka/charger.xml

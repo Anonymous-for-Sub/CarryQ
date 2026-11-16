@@ -1,0 +1,35 @@
+{
+  "name": "carryq-insertion-scene",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "test": "node --test ../web-tests/*.test.mjs",
+    "test:browser": "node scripts/check-browser.mjs",
+    "dev": "node scripts/build-scene.mjs && vite --host 127.0.0.1 --port 36832",
+    "build": "node scripts/build-scene.mjs && vite build",
+    "build:pages": "node scripts/build-scene.mjs && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "mujoco-js": "^0.0.7",
+    "mujoco-react": "^8.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/three": "^0.170.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "playwright": "^1.59.1",
+    "three-mesh-bvh": "0.8.3",
+    "typescript": "^5.7.2",
+    "vite": "^7.1.7"
+  }
+}
