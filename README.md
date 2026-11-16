@@ -9,7 +9,7 @@
 [![Tests](https://github.com/Anonymous-for-Sub/CarryQ/actions/workflows/tests.yml/badge.svg)](https://github.com/Anonymous-for-Sub/CarryQ/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](#installation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Project Page](https://img.shields.io/badge/Project_Page-Coming_soon-7B61FF?logo=googlechrome&logoColor=white)](#project-page)
+[![Project Page](https://img.shields.io/badge/Project_Page-Interactive_demo-7B61FF?logo=googlechrome&logoColor=white)](https://anonymous-for-sub.github.io/CarryQ/)
 [![arXiv](https://img.shields.io/badge/arXiv-Coming_soon-B31B1B?logo=arxiv&logoColor=white)](#paper)
 
 </div>
@@ -112,7 +112,14 @@ handling, vector lookup and invalid inputs. See [CONTRIBUTING.md](CONTRIBUTING.m
 
 ## Project page
 
-The project page link will be added here when available.
+[Open the precision workcell](https://anonymous-for-sub.github.io/CarryQ/):
+an interactive 3D scene with USB-C insertion and charger-to-power-strip
+insertion. Orbit the workcell, inspect each interface, play both tasks, or
+try manual fine alignment. This is a scripted kinematic illustration, not
+a policy rollout, contact-physics simulation or experimental result.
+
+The static site is served from `docs/`. See [scene notes](docs/site-notes.md)
+for controls and local preview instructions.
 
 ## Paper
 
