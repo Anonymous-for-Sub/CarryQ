@@ -1,0 +1,77 @@
+.research-diagram { border: 1px solid #303447; border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse at 45% 15%, #8080ff0a, transparent 65%), #0e121b; }
+.diagram-topline { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 20px; border-bottom: 1px solid #282e3c; }
+.diagram-topline h3 { font-size: 16px; }
+.diagram-tools { display: flex; align-items: center; gap: 10px; }
+.diagram-tools > button { font-size: 11px; padding: 6px 10px; background: transparent; }
+.diagram-scroll { overflow-x: auto; scrollbar-color: #4d526d #121722; }
+.diagram-scroll > svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.research-diagram svg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #dae0e9; font-size: 14px; }
+.research-diagram svg .diagram-section-label { font: 11px ui-monospace, monospace; letter-spacing: .07em; fill: #aaa7ef; }
+.research-diagram svg .diagram-note, .research-diagram svg .axis-label { fill: #9ba7ba; font-size: 12px; }
+.research-diagram svg .module-title { font-size: 14px; font-weight: 600; }
+.diagram-zone { fill: #141a25; stroke: #2b3446; }
+.diagram-module { fill: #171d2b; stroke: #3b4257; }
+.encoder-module { fill: #8080ff16; stroke: #8080ffbb; }
+.diagram-wire { fill: none; stroke: #777b9a; stroke-width: 1.5; }
+.replan-wire { stroke-dasharray: 5 4; stroke: #626783; }
+.wire-label-background { fill: #101520; }
+.encoder-detail { fill: #101621; stroke: #8080ff55; }
+.encoding-step { fill: #171d2a; stroke: #323b4e; transition: fill .25s, stroke .25s; }
+.encoding-step.selected { fill: #8080ff19; stroke: #a29aff; }
+.quantizer-node { fill: #8080ff22; stroke: #8e83ef; }
+.decoder-node, .sum-node { fill: #171e2d; stroke: #68728a; }
+.sum-symbol { font-size: 18px !important; fill: #d4ceff !important; }
+.cq-wire, .residual-path, .carry-between { fill: none; stroke: #9b91ff; stroke-width: 2; }
+.residual-path { stroke-dasharray: 6 5; }
+.carry-between { stroke-width: 1.5; stroke-dasharray: 4 4; }
+.flowing { animation: residual-flow 1s linear infinite; }
+@keyframes residual-flow { to { stroke-dashoffset: -22; } }
+.research-diagram .carry-label { fill: #bdb3ff; font-size: 11px; }
+.reset-boundary { stroke: #77c3bb; stroke-width: 3; }
+.token-cell { fill: #30384a; stroke: #4a5369; }
+.token-cell.active { fill: #8080ff; stroke: #aaa4ff; }
+.connector-sketch path { fill: #1a2331; stroke: #a8b4c7; stroke-width: 1.5; }
+.connector-sketch path.source-stroke { fill: none; stroke: #d6b479; }
+.connector-sketch path.cq-stroke { stroke: #a39bff; stroke-width: 3; }
+.axis-stroke { stroke: #707c92; stroke-width: 2; }
+.chart-grid { stroke: #293244; stroke-width: 1; }
+.diagram-curve { fill: none; stroke-width: 2.8; stroke-linejoin: round; }
+.source-stroke { stroke: #d6b479; }
+.ml-stroke { stroke: #939eaf; }
+.cq-stroke { stroke: #9d92ff; }
+.source-dot { fill: #d6b479; }
+.ml-dot { fill: #939eaf; }
+.cq-dot { fill: #9d92ff; }
+.research-diagram .source-text, .motivation-readouts .source-text { fill: #dcc08a; color: #dcc08a; }
+.research-diagram .ml-text, .motivation-readouts .ml-text { fill: #b5bfcd; color: #b5bfcd; }
+.research-diagram .cq-text, .motivation-readouts .cq-text { fill: #bbb0ff; color: #bbb0ff; }
+.diagram-legend { display: flex; flex-wrap: wrap; gap: 15px; font-size: 11px; color: #b5bfd0; }
+.diagram-legend span:before { content: ""; display: inline-block; width: 14px; height: 3px; margin: 0 5px 3px 0; }
+.source-key:before { background: #d6b479; }
+.ml-key:before { background: #939eaf; }
+.cq-key:before { background: #9d92ff; }
+.motivation-readouts { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; border-top: 1px solid #282e3c; padding: 12px 20px; font-size: 11px; color: #9daabd; }
+.motivation-readouts b { margin-left: 6px; font: 12px ui-monospace, monospace; }
+.diagram-controls { display: flex; align-items: center; gap: 18px; border-top: 1px solid #282e3c; padding: 10px 20px; }
+.diagram-controls button { font-size: 11px; padding: 6px 10px; min-width: 112px; }
+.diagram-controls label { display: flex; flex: 1; align-items: center; gap: 12px; color: #a1adc0; font-size: 11px; white-space: nowrap; }
+.diagram-controls input { min-width: 40px; }
+.diagram-controls output { font-size: 11px; white-space: nowrap; color: #c2bcf5; }
+.research-diagram figcaption { border-top: 1px solid #282e3c; padding: 11px 20px; color: #9daabd; font-size: 12px; line-height: 1.6; }
+.expanded-research-diagram { width: min(96vw, 1450px); background: #0e121b; }
+.expanded-research-diagram > svg { display: block; width: 100%; height: auto; }
+@media(max-width: 650px) {
+  .diagram-topline { align-items: flex-start; flex-wrap: wrap; padding: 13px; gap: 12px; }
+  .diagram-topline h3 { font-size: 15px; }
+  .diagram-tools { flex-wrap: wrap; gap: 8px; }
+  .diagram-tools .figure-options button { font-size: 10px; padding: 5px 8px; }
+  .diagram-legend { gap: 10px; font-size: 10px; }
+  .diagram-scroll > svg { min-width: 740px; }
+  .diagram-controls { gap: 9px; padding: 10px 13px; }
+  .diagram-controls button { min-width: 96px; font-size: 10px; }
+  .diagram-controls label { font-size: 10px; gap: 7px; }
+  .motivation-readouts { gap: 9px 18px; padding: 12px 13px; }
+  .research-diagram figcaption { padding: 10px 13px; font-size: 11px; }
+}
+@media(prefers-reduced-motion: reduce) { .flowing { animation: none; } }
+.research-diagram:not(.is-playing) .flowing { animation-play-state: paused; }

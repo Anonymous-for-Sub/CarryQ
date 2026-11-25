@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 const LiveWorkcell = lazy(() => import("./InsertionDemo.jsx"));
+import CameraFeedLabels from "./CameraFeedLabels.jsx";
 const base = import.meta.env.BASE_URL;
 function RecordedScene() {
   const container = useRef(null);
@@ -50,6 +51,7 @@ function RecordedScene() {
       <div className="recorded-canvas" ref={container}>
         {!ready && <img className="workcell-poster" src={base + "media/workcell-poster.jpg"} alt="Two Franka arms with USB-C and charger insertion fixtures" />}
         {!ready && <span className="scene-load" role="status">{error || "Loading 3D scene…"}</span>}
+        <CameraFeedLabels onSelect={key=>{setView(key);player.current?.setView(key);}} />
         <span className="orbit-hint">Drag to rotate · Scroll to zoom</span>
       </div>
       <aside className="workcell-controls">
@@ -70,8 +72,13 @@ function RecordedScene() {
         player.current.setView(event.target.value);
       }}>
           <option value="overview">Workcell</option>
+          <option value="setup">Full camera setup</option>
           <option value="usb">USB-C close-up</option>
           <option value="charger">Charger close-up</option>
+          <option value="global-usb">USB-C external camera</option>
+          <option value="wrist-usb">USB-C wrist camera</option>
+          <option value="global-charger">Charger external camera</option>
+          <option value="wrist-charger">Charger wrist camera</option>
         </select>
         <div className="actions">
           <button className="primary" disabled={!ready} onClick={() => {

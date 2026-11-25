@@ -258,3 +258,29 @@ footer { display: flex; align-items: center; justify-content: space-between; bor
   h1 { max-width: 1132px; font-size: clamp(32px, 3.05vw, 40px); }
   .recorded-canvas { height: clamp(310px, 43vh, 390px); }
 }
+
+/* The workcell and its observation views share one renderer and one timeline. */
+.hero h1, .hero-description { text-align: center; margin-left: auto; margin-right: auto; }
+.hero .resource-buttons { justify-content: center; }
+.anonymous-label { margin-left: 12px; }
+.recorded-canvas { height: 610px; }
+.demo-stage { height: 610px; }
+.sensor-feed-labels { position: absolute; inset: auto 0 0; display: grid; grid-template-columns: repeat(4,1fr); pointer-events: none; z-index: 4; }
+.sensor-feed-labels button { justify-self: start; margin: 0 5px 5px; padding: 3px 6px; border-radius: 4px; font-size: 9px; line-height: 1.4; color: #dddff4; background: #10141de8; border-color: #6f719144; pointer-events: auto; }
+.orbit-hint { bottom: calc(min(18vw, 177px) + 12px); }
+.demo-stage .sensor-feed-labels { inset: auto 0 0; }
+.demo-stage .about { bottom: calc(min(18vw, 177px) + 12px); }
+.demo-stage .note { bottom: calc(min(18vw, 177px) + 54px); }
+@media(min-width:901px) { .recorded-canvas { height: 610px; } }
+@media(max-width:600px) {
+  .anonymous-label { margin-left: 0; text-align: center; }
+  .recorded-canvas { height: 410px; }
+  .sensor-feed-labels button { font-size: 7px; padding: 2px 3px; margin: 0 2px 3px; }
+  .orbit-hint { bottom: calc(18vw + 12px); font-size: 9px; }
+  .demo-stage { height: 725px; }
+  .demo-stage.is-loaded > div:first-child { height: 440px !important; }
+  .demo-stage .panel { top: 454px; }
+  .demo-stage .sensor-feed-labels { bottom: 285px; }
+  .demo-stage .about { bottom: 12px; }
+  .demo-stage .note { bottom: 55px; }
+}

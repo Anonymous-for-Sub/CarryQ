@@ -58,9 +58,22 @@ The recorded viewer renders and interpolates saved poses. Its loading poster is
 a capture of the same initial workcell. The original MuJoCo mode remains
 available through the mode selector.
 
-The paper architecture is in `src/figures/paper-architecture.svg`. It is a direct
-vector export with outlined text, and detail highlights are separate overlays.
-The public copy in `public/figures/` is available for visual comparison.
+The current dark method illustrations are in `src/ResearchDiagrams.jsx`.
+They compute their example values from the shared encoder and support animation
+and seeking. Camera assets and mounting transforms are in `src/cameraRig.js`.
+The same rig and view renderer serve live physics and recorded playback.
+Publisher sources and licenses are in `public/camera-rig/`.
+
+To regenerate the compact camera model pack, download the three upstream assets
+listed in `public/camera-rig/sources.json` into a temporary
+`public/camera-rig/source/` directory, start the development server, then run:
+
+```sh
+node scripts/prepare-camera-assets.mjs http://localhost:36832/CarryQ/ public/camera-rig/models.json.gz
+```
+
+Remove the temporary source directory before the production build. The runtime
+uses the converted model pack.
 
 ## Cameras and process figures
 
@@ -69,7 +82,7 @@ and two hand-mounted wrist views, in addition to the orbitable workcell and
 close-ups. Wrist extrinsics stay fixed in each hand's frame: they do not track
 the target independently. The camera bodies and stands are visual instrumentation,
 not added collision bodies or loads. Their nominal fields of view are not a
-physical camera calibration. Camera definitions are in `src/TaskCameras.jsx`.
+physical camera calibration. Camera definitions are in `src/cameraRig.js`.
 
 To export seven synchronized external/wrist image pairs per task, start the
 development server and run:

@@ -1,0 +1,24 @@
+{
+  "assets": [
+    {
+      "asset": "RealSense D435",
+      "source": "https://github.com/realsenseai/realsense-ros/blob/ros2-master/realsense2_description/meshes/d435.dae",
+      "license": "Apache-2.0",
+      "source_sha256": "42f3b66f47a1f8f425a2e4dc07c1d9c283183167d8441f520a15623d98f9bf78"
+    },
+    {
+      "asset": "IndustRealKit Panda mount by Kenneth MacLean",
+      "source": "https://github.com/NVlabs/industrealkit/tree/main/camera_mount",
+      "license": "NVIDIA License",
+      "source_sha256": "30773ea9e10f0ee47ef22e49f05d50f44b0972e483c30674489bd85f4ff0e5ed"
+    },
+    {
+      "asset": "tevy Camera Tripod v1",
+      "source": "https://tevy.dev/models/camera-tripod/v1/lod0.glb",
+      "license": "CC0-1.0",
+      "source_sha256": "dc1843df7be5a95e19d9dc768c00f6c37d800a0d103fb66ba9287aefaa8d404b"
+    }
+  ],
+  "conversion": "Published geometry converted to browser scene, welded, simplified and assigned solid material colors. Camera and mount relative geometric error target 0.003.",
+  "tripod_height_m": 1.1
+}

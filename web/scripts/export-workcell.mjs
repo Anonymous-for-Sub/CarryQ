@@ -38,6 +38,7 @@ try {
     capture.pause();
     const scene = capture.scene;
     const meshes = [];
+    const handFrames=[];
     const plainGeometry = source => {
       const geometry = source.clone();
       let prototype = Object.getPrototypeOf(geometry);
@@ -50,6 +51,7 @@ try {
     scene.updateMatrixWorld(true);
     scene.traverse(o => {
       if (!o.isMesh || !o.geometry.attributes.position || !o.visible) return;
+      for(let parent=o;parent;parent=parent.parent)if(parent.userData.sensorOverlay||!parent.visible)return;
       const clone = o.clone(false);
       clone.name = 'mesh_' + meshes.length;
       clone.geometry = plainGeometry(o.geometry);
@@ -63,6 +65,7 @@ try {
     });
     const frame = () => {
       scene.updateMatrixWorld(true);
+      handFrames.push(capture.handPoses());
       for (const m of meshes) {
         const object = m.original;
         object.matrixWorld.decompose(m.clone.position, m.clone.quaternion, m.clone.scale);
@@ -97,6 +100,7 @@ try {
     }
     window.__exportedScene = {
       object: clone.toJSON(),
+      handFrames,
       times: [0, ...states.map(s => s.snapshot.time)],
       labels: [{
         task: 'both',

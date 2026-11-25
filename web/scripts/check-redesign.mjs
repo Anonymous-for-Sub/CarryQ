@@ -40,24 +40,24 @@ try {
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
   await page.screenshot({ path: folder + "/first-screen.png" });
 
-  const diagram = page.locator(".paper-architecture");
-  await diagram.getByRole("button", { name: "Carry and reset", exact: true }).click();
-  assert.equal(await diagram.locator(".diagram-highlight").count(), 4);
-  await diagram.getByRole("button", { name: "Full diagram", exact: true }).click();
-  await diagram.getByRole("button", { name: "t = 2", exact: true }).click();
-  assert.match(await diagram.locator("dl").textContent(), /−0.32/);
-  await diagram.getByRole("button", { name: /Expand figure/ }).click();
-  assert.equal(await page.getByRole("dialog").count(), 1);
+  assert.equal(await page.locator(".sensor-feed-labels button").count(),4);
+  await page.locator(".sensor-feed-labels").getByRole("button",{name:"USB-C · wrist",exact:true}).click();
+  assert.equal(await page.locator("#playback-view").inputValue(),"wrist-usb");
+  const diagram=page.locator(".system-architecture");
+  await diagram.getByRole("button",{name:"Joint targets",exact:true}).click();
+  await diagram.getByText("Difference joint targets",{exact:true}).waitFor();
+  await diagram.getByRole("button",{name:"Scalar",exact:true}).click();
+  await diagram.getByRole("button",{name:"Expand",exact:true}).click();
+  assert.equal(await page.getByRole("dialog").count(),1);
   await page.keyboard.press("Escape");
-  assert.equal(await page.getByRole("dialog").count(), 0);
-  await diagram.screenshot({ path: folder + "/paper-architecture.png" });
-
-  // Compare the original vector at its 968 × 640 paper dimensions.
-  const proof = await browser.newPage({viewport: {width: 968, height: 640}});
-  const vectorUrl = new URL("figures/paper-architecture.svg", page.url());
-  await proof.goto(vectorUrl.href);
-  await proof.screenshot({path: folder + "/architecture-vector-raster.png"});
-  await proof.close();
+  assert.equal(await page.getByRole("dialog").count(),0);
+  await diagram.screenshot({path:folder+"/architecture.png"});
+  const motivation=page.locator(".motivation-diagram");
+  await motivation.getByRole("slider",{name:"Executed actions",exact:true}).fill("4");
+  assert.match(await motivation.locator(".motivation-readouts").textContent(),/2.00/);
+  await motivation.screenshot({path:folder+"/motivation.png"});
+  assert.ok(!await page.locator("a").allTextContents().then(values=>values.some(text=>/[↗↓]/.test(text))));
+  assert.equal(await page.locator("h1").evaluate(element=>getComputedStyle(element).textAlign),"center");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
   await page.screenshot({ path: folder + "/mobile-first-screen.png" });
@@ -65,7 +65,7 @@ try {
   await diagram.screenshot({ path: folder + "/mobile-architecture.png" });
   assert.deepEqual(errors, []);
   await writeFile(folder + "/browser-check.json", JSON.stringify({ errors, initialRequests: requests }, null, 2));
-  console.log("PASS: visible first-screen 3D, no physics on initial load, playback, pause, reset, task/view selection, paper vector, highlights, detail values, modal, mobile layout.");
+  console.log("PASS: 3D playback, four camera views, task/view selection, native dark diagrams, animation controls, modal, centered title, plain navigation labels and mobile layout.");
 } finally {
   await browser.close();
 }

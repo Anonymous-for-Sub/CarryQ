@@ -1,26 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-
-function unpackGeometry(geometry) {
-  for (const attribute of Object.values(geometry.data?.attributes || {})) {
-    if (!attribute.base64) continue;
-    const bytes = Uint8Array.from(atob(attribute.base64), (char) => char.charCodeAt(0));
-    attribute.array = new Float32Array(bytes.buffer);
-    delete attribute.base64;
-  }
-}
+import {unpackGeometry,loadPackedJson,loadCameraModels,createCameraRig,renderCameraViews} from "./cameraRig.js";
 
 export async function createRecordedWorkcell(container, { signal, onTime, onReady }) {
-  const response = await fetch(import.meta.env.BASE_URL + "media/workcell.json.gz", { signal });
-  if (!response.ok) throw new Error("The recorded scene could not be downloaded.");
-  // Static hosts differ in whether they advertise Content-Encoding for .gz.
-  // Inspect the returned bytes because fetch already decodes that HTTP encoding.
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  const compressed = bytes[0] === 0x1f && bytes[1] === 0x8b;
-  const body = compressed
-    ? new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))
-    : bytes;
-  const recording = await new Response(body).json();
+  const [recording, assets] = await Promise.all([
+    loadPackedJson(import.meta.env.BASE_URL+"media/workcell.json.gz",signal),
+    loadCameraModels(),
+  ]);
   signal.throwIfAborted();
   recording.object.geometries.forEach(unpackGeometry);
   const objectLoader = new THREE.ObjectLoader();
@@ -35,7 +21,9 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
     });
     return { ...item, object, geometries };
   });
+  const rig=createCameraRig(assets);
   const scene = new THREE.Scene();
+  scene.add(rig.root);
   scene.background = new THREE.Color("#d8d2b5");
   scene.add(model, new THREE.HemisphereLight("#ffffff", "#9a9c9b", 2.1));
   const light = new THREE.DirectionalLight("#ffffff", 2.0);
@@ -75,7 +63,14 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   let view = "overview";
   const temporary = new THREE.Quaternion();
   const endQuaternion = new THREE.Quaternion();
-  const render = () => { if (!disposed && visible) renderer.render(scene, camera); };
+  const render = () => {
+    if(disposed||!visible)return;
+    const selected=rig.sensors[view]?.camera;
+    if(selected){
+      camera.position.copy(selected.position);camera.quaternion.copy(selected.quaternion);camera.fov=selected.fov;
+    }
+    renderCameraViews(renderer,scene,camera,rig,container.clientWidth,container.clientHeight);
+  };
   const limits = () => task === "usb" ? [0, recording.times[7]] : task === "charger" ? [recording.times[7], duration] : [0, duration];
 
   function seek(time) {
@@ -99,6 +94,20 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
       const geometry = item.geometries.findLast((frame) => frame.index <= index);
       if (geometry) item.object.geometry = geometry.geometry;
     }
+    if(recording.handFrames){
+      const a=recording.handFrames[index],b=recording.handFrames[index+1];
+      const hands={};
+      for(const name of Object.keys(a)){
+        temporary.fromArray(a[name].quaternion);
+        endQuaternion.fromArray(b[name].quaternion);
+        temporary.slerp(endQuaternion,fraction);
+        hands[name]={
+          position:a[name].position.map((value,i)=>THREE.MathUtils.lerp(value,b[name].position[i],fraction)),
+          quaternion:temporary.toArray(),
+        };
+      }
+      rig.update(hands);
+    }
     if (Math.abs(lastReport - current) > 0.09 || !playing) {
       lastReport = current;
       const label = recording.labels[fraction >= 0.999999 ? index + 1 : index];
@@ -109,11 +118,14 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
 
   function setView(next) {
     view = next;
-    let target = [0.3, 0, 0.25];
-    let position = [1.5, -1.65, 1.4];
+    controls.enabled=!rig.sensors[next];
+    camera.fov=42;
+    let target = [0.48, 0, 0.27];
+    let position = [1.03, -1.55, 1.22];
+    if(next==="setup"){target=[.65,0,.35];position=[2.5,-2.6,2.2];}
     if (next === "usb") { target = [0.48, -0.42, 0.25]; position = [0.7, -0.16, 0.43]; }
     if (next === "charger") { target = [0.48, 0.42, 0.205]; position = [0.7, 0.14, 0.37]; }
-    if (container.clientWidth < 600 && next === "overview") position = [1.7, -1.85, 1.6];
+    if (container.clientWidth < 600 && next === "overview") position = [1.5, -1.75, 1.4];
     camera.position.set(...position);
     controls.target.set(...target);
     controls.update();
@@ -135,13 +147,15 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   }, { threshold: 0.05 });
   observer.observe(container);
   controls.addEventListener("change", render);
+  let lastRender=0;
   function tick(now) {
     if (disposed) return;
     const delta = Math.min((now - last) / 1000, 0.1);
     last = now;
     if (playing && visible && !document.hidden) {
-      const [start, end] = limits();
-      seek(current + delta > end ? start : current + delta);
+      const [start,end]=limits();
+      current=current+delta>end?start:current+delta;
+      if(now-lastRender>40){lastRender=now;seek(current);}
     }
     request = requestAnimationFrame(tick);
   }

@@ -2,7 +2,7 @@
 
 The page presents the paper's temporal-error argument, interactive encoding
 arithmetic, real-robot photographs, tabulated results and recorded comparisons.
-The purple theme uses `#8080FF`. It has no author-identifying profile,
+The two method illustrations use native dark SVG diagrams with playback controls, codeword calculations and interface selection. The purple theme uses `#8080FF`. It has no author-identifying profile,
 analytics or external font dependency.
 
 ## Interactive encoding
@@ -28,16 +28,24 @@ The page initially loads a Three.js playback of saved MuJoCo poses.
 The same Panda geometry, fixtures and materials are retained. Fourteen saved
 states plus the initial pose cover USB-C and charger insertion. Positions and
 quaternions are interpolated between those states. The browser supports orbit,
-zoom, seek, task selection, and three camera views. It pauses rendering outside
+zoom, seek, task selection, and close-up, external, wrist and setup views. It pauses rendering outside
 the viewport and while the tab is hidden.
 
-The packed scene is about 5.25 MB. The physics bundle and original OBJ assets
+The packed scene is about 5.2 MB. Camera hardware uses a separate approximately 0.38 MB asset pack. The physics bundle and original OBJ assets
 load when **Live physics** is selected. Both modes appear in the first-screen
 workcell. The original interactive MuJoCo mode retains its controls and views.
 
-The Method overview is exported directly from the paper's architecture PDF
-as SVG paths with outlined glyphs. Full diagram preserves the original artwork.
-Detail controls add separate highlight overlays and explanations.
+The Method overview shows observations, completed policy prediction, the action
+chunk, temporal encoding, decoding, execution and replanning. Its animated inner
+view follows residual addition, quantization and carry over three scalar steps.
+Scalar, vector and joint-target interface labels retain their corresponding
+residual rules. The motivation diagram computes the eight-action example
+directly in grid units and provides play, pause and seek controls.
+
+Four synchronized sensor images occupy the bottom of the workcell. Click a
+sensor label to select its view in the main viewport. The same renderer and
+timeline drive the external and wrist views. A Full camera setup view shows the
+hardware layout, while the default workcell view focuses on the task region.
 
 ## Live physics controls
 
@@ -99,3 +107,17 @@ The Panda model preserves the reference application's actuator tuning. Task
 variants add held objects and tip sites and remove its original home keyframe.
 Third-party license notices are retained; the project MIT license does not
 replace these asset licenses.
+
+## Camera hardware
+
+The D435 body uses the RealSense ROS mesh. The wrist mount uses the published
+IndustRealKit Panda camera mount, designed by Kenneth MacLean. The hand-relative
+camera and mount follow the same hand frame. External cameras sit on tevy's
+published Camera Tripod v1, scaled to 1.10 m above its feet and aimed at the
+insertion region. Geometry and publisher licenses are recorded in
+[camera asset credits](camera-rig/ASSET_CREDITS.md).
+
+The physical layout follows the hand/flange mounting arrangement documented in
+[Franka's camera-mount guide](https://franka.de/hubfs/Setup%20Guide%20for%20Camera%20Mount%20on%20Franka%20Robots_1.1_EN.pdf?hsLang=en)
+and [IndustRealKit](https://github.com/NVlabs/industrealkit).
+Transforms and fields of view are nominal illustration settings.

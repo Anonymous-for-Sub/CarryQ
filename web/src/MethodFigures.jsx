@@ -62,7 +62,7 @@ export function Architecture() {
   return <figure className="paper-architecture">
       <div className="architecture-toolbar">
         <h3>Method overview</h3>
-        <button onClick={() => setExpanded(true)}>Expand figure ↗</button>
+        <button onClick={() => setExpanded(true)}>Expand figure</button>
       </div>
       <div className="architecture-body">
         <div className="architecture-scroll">

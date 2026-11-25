@@ -11,7 +11,7 @@ const browser = await chromium.launch({
     "--enable-unsafe-swiftshader",
   ],
 });
-const page = await browser.newPage({ viewport: { width: 1000, height: 740 } });
+const page = await browser.newPage({ viewport: { width: Number(process.env.CARRYQ_CHECK_WIDTH || 1000), height: 740 } });
 const errors = [];
 const screenshots=process.env.CARRYQ_SCREENSHOTS;
 if(screenshots)await mkdir(screenshots,{recursive:true});
@@ -57,7 +57,8 @@ try {
   await page.getByRole("button", { name: "Play", exact: true }).click();
   await page.waitForFunction(
     () =>
-      document.querySelector("[role=status]")?.textContent.includes("Seated"),
+      document.querySelector("[role=status]")?.textContent.includes("Seated") ||
+      window.__insertion?.phase === "blocked",
     {},
     { timeout: 300000 },
   );
@@ -113,6 +114,10 @@ try {
   console.log(
     "Passed: two Franka arms, both insertions, measured seating, reset, pause/resume, views and mobile layout.",
   );
+} catch (error) {
+  console.error("Last simulation state:", await page.evaluate(() => ({status:document.querySelector('[role=status]')?.textContent,simulation:window.__insertion})).catch(() => null));
+  await capture('failure').catch(() => {});
+  throw error;
 } finally {
   await browser.close();
 }

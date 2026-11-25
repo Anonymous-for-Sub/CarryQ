@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import videos from './videos.json';
 import insertion from './insertion.json';
 import real from './real.json';
 import { encodeExample } from './encoding.mjs';
 import './style.css';
-import { Architecture, PaperFigure, TemporalEvidence, TokenTape } from './MethodFigures.jsx';
+import { PaperFigure, TemporalEvidence, TokenTape } from './MethodFigures.jsx';
+import {MotivationDiagram,SystemArchitecture} from "./ResearchDiagrams.jsx";
 import Workcell from './Workcell.jsx';
 const BASE = import.meta.env.BASE_URL;
 const file = p => BASE + p;
@@ -142,7 +143,7 @@ function MethodSection() {
         CarryQ uses the residual from earlier choices to adjust the next quantizer input.
         A short memory state lets successive errors compensate within the same action interface.
       </SectionHead>
-      <Architecture />
+      <SystemArchitecture />
       <div className="method-concepts">
         <article><h3>Residual addition</h3><p>The previous discrepancy adjusts the next source command before token selection.</p></article>
         <article><h3>Fixed action interface</h3><p>The vocabulary, decoder and token budget stay matched within each comparison.</p></article>
@@ -181,9 +182,9 @@ function App() {
         <h1>Beyond Pointwise Accuracy:<br /><span>Temporal Error Structure in Robot Action Tokenization</span></h1>
         <p className="hero-description">CarryQ · Temporal residual-feedback action encoding</p>
         <div className="resource-buttons">
-          <a className="button primary" href={supplement}>Supplementary material ↗</a>
-          <a className="button" href={codeLink}>Code ↗</a>
-          <a className="button" href="#method">Method ↓</a>
+          <a className="button primary" href={supplement}>Supplementary material</a>
+          <a className="button" href={codeLink}>Code</a>
+          <a className="button" href="#method">Method</a>
           <span className="anonymous-label">Anonymous submission</span>
         </div>
         <Workcell />
@@ -203,7 +204,7 @@ function App() {
         <SectionHead n="The problem" title="Small rounding errors can persist">
           Fine alignment often requires repeated small increments. When their encoding errors point in the same direction, the cumulative command diverges.
         </SectionHead>
-        <PaperFigure name="temporal-bias.png" alt="The paper motivation figure showing repeated quantization bias during eight alignment steps" caption="In this eight-action example, the requested sum is 1.25 grid units and Memoryless decodes 4.00. The local error repeats, producing a larger cumulative discrepancy." />
+        <MotivationDiagram />
       </section>
       <MethodSection />
       <TemporalEvidence />
@@ -212,8 +213,8 @@ function App() {
       <Gallery />
       <section className="section wrap resources">
         <SectionHead n="Resources" title="Inspect the method and evidence" />
-        <a className="button primary" href={supplement}>Supplementary PDF ↗</a>
-        <a className="button" href={codeLink}>Source code ↗</a>
+        <a className="button primary" href={supplement}>Supplementary PDF</a>
+        <a className="button" href={codeLink}>Source code</a>
       </section>
     </main>
     <footer className="wrap"><a className="brand" href="#"><Mark />CarryQ</a><span>Temporal residual-feedback action encoding</span></footer>

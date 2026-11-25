@@ -26,6 +26,7 @@ import {
 } from "./task.js";
 import { Cables } from "./Cables.jsx";
 import { TaskCameras } from "./TaskCameras.jsx";
+import CameraFeedLabels from "./CameraFeedLabels.jsx";
 
 
 const config = {
@@ -40,11 +41,11 @@ function Camera({ view }) {
   useEffect(() => {
     if (view.startsWith('global-') || view.startsWith('wrist-')) return;
     const t = TASKS.find((t) => t.key === view);
-    const target = t ? [t.x, t.y, t.mouth + 0.025] : [0.25, 0, 0.28];
+    const target = t ? [t.x, t.y, t.mouth + 0.025] : [0.48, 0, 0.27];
     camera.position.set(
       ...(t
         ? [t.x + 0.19, t.y + (t.key === "usb" ? 0.24 : -0.24), t.mouth + 0.17]
-        : [1.65, -1.85, 1.65]),
+        : view==="setup" ? [2.5,-2.6,2.2] : [1.03, -1.55, 1.22]),
     );
     if (size.width < size.height) {
       const scale = t ? 1.35 : 2.2;
@@ -315,7 +316,7 @@ export default function InsertionDemo() {
           paused={paused}
           shadows
           camera={{
-            position: [1.65, -1.85, 1.65],
+            position: [1.28, -1.45, 1.22],
             up: [0, 0, 1],
             fov: 42,
             near: 0.002,
@@ -355,6 +356,7 @@ export default function InsertionDemo() {
           />
         </MujocoCanvas>
       </MujocoProvider>
+      <CameraFeedLabels onSelect={setView} />
       <section className="panel" aria-label="Insertion controls">
         <div className="title">Franka · Precision insertion</div>
         <label>
@@ -387,6 +389,7 @@ export default function InsertionDemo() {
             onChange={(e) => setView(e.target.value)}
           >
             <option value="overview">Workcell</option>
+            <option value="setup">Full camera setup</option>
             <option value="usb">USB-C close-up</option>
             <option value="charger">Power strip close-up</option>
             <option value="global-usb">Global 1 · USB-C</option>
