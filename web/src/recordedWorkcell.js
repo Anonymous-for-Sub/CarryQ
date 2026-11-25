@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {unpackGeometry,loadPackedJson,loadCameraModels,createCameraRig,renderCameraViews} from "./cameraRig.js";
+import { WORKCELL_COLORS } from "./workcellAppearance.js";
 
 export async function createRecordedWorkcell(container, { signal, onTime, onReady }) {
   const [recording, assets] = await Promise.all([
@@ -13,6 +14,11 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   const model = objectLoader.parse(recording.object);
   const objects = new Map();
   model.traverse((object) => objects.set(object.name, object));
+  for (const [name, color] of [["mesh_0", WORKCELL_COLORS.floor], ["mesh_1", WORKCELL_COLORS.mat]]) {
+    const object = objects.get(name);
+    object.material = object.material.clone();
+    object.material.color.set(color);
+  }
   const animated = recording.meshes.filter((item) => item.frames.length > 1 || item.geometryFrames.length).map((item) => {
     const object = objects.get(item.name);
     const geometries = item.geometryFrames.map(({index, geometry}) => {
@@ -24,7 +30,7 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   const rig=createCameraRig(assets);
   const scene = new THREE.Scene();
   scene.add(rig.root);
-  scene.background = new THREE.Color("#d8d2b5");
+  scene.background = new THREE.Color(WORKCELL_COLORS.background);
   scene.add(model, new THREE.HemisphereLight("#ffffff", "#9a9c9b", 2.1));
   const light = new THREE.DirectionalLight("#ffffff", 2.0);
   light.position.set(1, -2, 5);
@@ -33,7 +39,7 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   Object.assign(light.shadow.camera, {left: -1.5, right: 1.5, top: 1.5, bottom: -1.5, near: 0.1, far: 10});
   light.shadow.bias = -0.0005;
   scene.add(light);
-  const grid = new THREE.GridHelper(6, 60, "#a8aca9", "#c7cac1");
+  const grid = new THREE.GridHelper(6, 60, WORKCELL_COLORS.gridMajor, WORKCELL_COLORS.gridMinor);
   grid.rotation.x = Math.PI / 2;
   grid.position.z = -0.054;
   scene.add(grid);
@@ -44,7 +50,7 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setClearColor("#d8d2b5");
+  renderer.setClearColor(WORKCELL_COLORS.background);
   renderer.domElement.setAttribute("aria-label", "Rotatable recorded MuJoCo insertion workcell");
   container.appendChild(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);

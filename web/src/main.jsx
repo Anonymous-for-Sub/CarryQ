@@ -3,14 +3,16 @@ import { createRoot } from 'react-dom/client';
 import videos from './videos.json';
 import insertion from './insertion.json';
 import real from './real.json';
-import { encodeExample } from './encoding.mjs';
 import './style.css';
-import { PaperFigure, TemporalEvidence, TokenTape } from './MethodFigures.jsx';
+import { TemporalEvidence } from './MethodFigures.jsx';
+import CodewordExplorer from './CodewordExplorer.jsx';
 import {MotivationDiagram,SystemArchitecture} from "./ResearchDiagrams.jsx";
 import Workcell from './Workcell.jsx';
+import './refinement.css';
 const BASE = import.meta.env.BASE_URL;
 const file = p => BASE + p;
 const codeLink = import.meta.env.VITE_SUPPLEMENTARY === 'true' ? '../code/README.md' : 'https://github.com/Anonymous-for-Sub/CarryQ';
+const paper = file('paper.pdf');
 const supplement = import.meta.env.VITE_SUPPLEMENTARY === 'true' ? '../appendix.pdf' : file('appendix.pdf');
 const fmt = n => Number(n).toFixed(2);
 const links = [['demo', 'Demo'], ['method', 'Method'], ['real', 'Real robot'], ['results', 'Results'], ['analysis', 'Analysis'], ['gallery', 'Videos']];
@@ -41,45 +43,7 @@ function SectionHead({
 }) {
   return <div className="section-head"><div className="eyebrow">{n}</div><h2>{title}</h2>{children && <p>{children}</p>}</div>;
 }
-function Mechanism() {
-  const [increment, setIncrement] = useState(.18),
-    [reset, setReset] = useState(8),
-    [step, setStep] = useState(8),
-    [playing, setPlaying] = useState(false);
-  const rows = encodeExample({
-    increment,
-    reset
-  });
-  const current = rows[step - 1];
-  useEffect(() => {
-    if (!playing) return;
-    const timer = setInterval(() => setStep(s => {
-      if (s >= 16) {
-        setPlaying(false);
-        return s;
-      }
-      return s + 1;
-    }), 500);
-    return () => clearInterval(timer);
-  }, [playing]);
-  const sx = t => 54 + t * 35,
-    sy = y => 245 - y * 24;
-  const points = key => [[sx(0), sy(0)], ...rows.slice(0, step).map(r => [sx(r.step), sy(r[key])])].map(p => p.join(',')).join(' ');
-  return <><div className="mechanism panel-surface"><div className="mechanism-plot"><div className="chart-top"><h3>One grid. Different error histories.</h3><span className="tag">Computed example</span></div><div className="legend"><span className="requested">Requested sum</span><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div><svg viewBox="0 0 670 310" role="img" aria-label="Cumulative requested and decoded commands across sixteen action steps"><text x="54" y="20" className="axis-label">Cumulative command / grid spacing</text>{[0, 2, 4, 6, 8].map(y => <g key={y}><line x1="54" x2="614" y1={sy(y)} y2={sy(y)} className="grid-line" /><text x="34" y={sy(y) + 4}>{y}</text></g>)}{[0, 4, 8, 12, 16].map(t => <text key={t} x={sx(t)} y="274" textAnchor="middle">{t}</text>)}<text x="614" y="298" textAnchor="end">Action step</text>{Array.from({
-            length: Math.floor(15 / reset)
-          }, (_, i) => (i + 1) * reset).map(t => <line key={t} x1={sx(t)} x2={sx(t)} y1="30" y2="245" className="reset-line" />)}<polyline points={points('requested')} className="requested-path" /><polyline points={points('mlSum')} className="baseline-path" /><polyline points={points('cqSum')} className="ours-path" />{['requested', 'mlSum', 'cqSum'].map((key, i) => <circle key={key} cx={sx(step)} cy={sy(current[key])} r="5" fill={['#e5c683', '#8c96a9', '#8080ff'][i]} />)}</svg><div className="playback"><button onClick={() => {
-            if (step === 16) setStep(1);
-            setPlaying(p => !p);
-          }}>{playing ? 'Pause' : 'Play steps'}</button><label className="sr-only" htmlFor="step">Action step</label><input id="step" type="range" min="1" max="16" value={step} onChange={e => {
-            setPlaying(false);
-            setStep(+e.target.value);
-          }} /><output>Step {step}/16</output></div></div><div className="mechanism-inspector"><div className="eyebrow">Follow the residual</div><h3>Earlier error guides the next token.</h3><label htmlFor="increment">Requested increment <output>{increment.toFixed(2)} Δ</output></label><input id="increment" type="range" min=".06" max=".44" step=".02" value={increment} onChange={e => setIncrement(+e.target.value)} /><label htmlFor="reset">Reset every</label><select id="reset" value={reset} onChange={e => setReset(+e.target.value)}>{[1, 2, 4, 8, 16].map(n => <option key={n} value={n}>{n} action{n > 1 ? 's' : ''}</option>)}</select><div className="trace"><div><span>Requested aₜ</span><b>{fmt(current.source)}</b></div><div><span>Previous residual rₜ</span><b>{fmt(current.previous)}</b></div><div><span>Adjusted input aₜ + rₜ</span><b>{fmt(current.input)}</b></div><div className="trace-token"><span>Selected codeword qₜ</span><b>{fmt(current.cq)}</b></div><div><span>Next residual rₜ₊₁</span><b>{fmt(current.residual)}</b></div></div><p className="small">A symmetric midpoint grid without a zero codeword. Values are in grid units; dashed lines mark resets.</p></div><div className="mechanism-summary"><span>At step {step}, cumulative error magnitude</span><strong className="baseline">Memoryless {fmt(Math.abs(current.mlSum - current.requested))} Δ</strong><strong className="ours">CarryQ {fmt(Math.abs(current.cqSum - current.requested))} Δ</strong></div></div>
-<TokenTape rows={rows} step={step} reset={reset} seek={next => {
-      setPlaying(false);
-      setStep(next);
-    }} />
-</>;
-}
+
 const resultSets = {
   Replay: {
     note: 'Fixed-source replay on six sensitivity-selected LIBERO tasks, conditioned on successful continuous references. Each pair shares source commands, codewords, decoder and budget.',
@@ -104,23 +68,49 @@ function Bars({
         }} /><b>{fmt(cq)}%</b></div><p>{detail}</p></div>)}</div>;
 }
 function Results() {
-  const [tab, setTab] = useState('Replay'),
-    [table, setTable] = useState(false),
-    [bits, setBits] = useState(8);
-  const data = resultSets[tab];
+  const [table, setTable] = useState(false);
+  const [bits, setBits] = useState(8);
   const fine = ['USB-C', 'Charger'].map(task => {
-    const get = m => insertion.find(r => +r.bits === bits && r.task === task && r.method === m);
+    const get = method => insertion.find(row => +row.bits === bits && row.task === task && row.method === method);
     return [task, +get('Memoryless').s2_pct, +get('CarryQ').s2_pct, `${get('Memoryless').s2_successes} → ${get('CarryQ').s2_successes} / 120 episodes`];
   });
-  return <><section id="results" className="wrap section"><SectionHead n="Execution evidence" title="Execution across tokenizers, tasks and policies">A shared interface isolates what temporal encoding changes.</SectionHead><div className="tabs" role="tablist" aria-label="Evaluation setting">{Object.keys(resultSets).map(k => <button role="tab" aria-selected={tab === k} key={k} onClick={() => setTab(k)}>{k}</button>)}</div><div className="panel-surface result-panel"><div className="chart-top"><h3>Task success (%)</h3><button className="text-button" onClick={() => setTable(!table)}>{table ? 'Chart view' : 'Table view'}</button></div><div className="legend"><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div>{table ? <div className="table-scroll"><table><thead><tr><th>Setting</th><th>Memoryless</th><th>CarryQ</th><th>Gain</th></tr></thead><tbody>{data.rows.map(([name, a, b, note]) => <tr key={name}><td>{name}<small>{note}</small></td><td>{fmt(a)}%</td><td>{fmt(b)}%</td><td>+{fmt(b - a)} pp</td></tr>)}</tbody></table></div> : <Bars rows={data.rows} />}<p className="caption">{data.note}</p></div><div className="insertion-result"><div><div className="eyebrow">Fine insertion · OpenVLA-OFT</div><h3>Temporal feedback at finer precision.</h3><p>USB-C and two-blade charger insertion with Franka Panda in MuJoCo. Each method uses 120 episodes per task and bit width.</p><div className="tabs" aria-label="Insertion bit width">{[8, 6, 4].map(b => <button key={b} aria-pressed={bits === b} onClick={() => setBits(b)}>{b} bits</button>)}</div><p className="small">H = 8 · K = 4 · 10 Hz<br />S2: completed insertion</p></div><div className="panel-surface"><Bars rows={fine} /></div></div></section></>;
+  return <section id="results" className="wrap section">
+    <SectionHead n="Execution evidence" title="Execution across tokenizers, tasks and policies">A shared interface isolates what temporal encoding changes.</SectionHead>
+    <div className="chart-top evaluation-top"><div className="legend"><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div><button className="text-button" onClick={()=>setTable(!table)}>{table?'Chart view':'Table view'}</button></div>
+    <div className="evaluation-grid">
+      {Object.entries(resultSets).map(([name,data])=><article className="panel-surface evaluation-card" key={name}>
+        <div className="evaluation-heading"><h3>{name}</h3><span>Task success (%)</span></div>
+        {table ? <div className="table-scroll"><table><thead><tr><th>Setting</th><th>ML</th><th>CarryQ</th><th>Gain</th></tr></thead><tbody>{data.rows.map(([label,a,b,note])=><tr key={label}><td>{label}<small>{note}</small></td><td>{fmt(a)}%</td><td>{fmt(b)}%</td><td>+{fmt(b-a)}</td></tr>)}</tbody></table></div> : name==='Additional tasks' ? <div className="additional-summary">
+          <span className="cohort-label">12 independently selected LIBERO tasks</span>
+          <div className="additional-stat"><span>Memoryless</span><strong className="baseline">58.75<small>%</small></strong><small>141 / 240</small></div>
+          <div className="additional-stat"><span>CarryQ</span><strong className="ours">92.92<small>%</small></strong><small>223 / 240</small></div>
+          <div className="cohort-gain">+34.17 <span>percentage points</span></div>
+        </div> : <Bars rows={data.rows}/>}
+        <p className="caption evaluation-note">{data.note}</p>
+      </article>)}
+    </div>
+    <div className="insertion-result"><div><div className="eyebrow">Fine insertion · OpenVLA-OFT</div><h3>Temporal feedback at finer precision.</h3><p>USB-C and two-blade charger insertion with Franka Panda in MuJoCo. Each method uses 120 episodes per task and bit width.</p><div className="tabs" aria-label="Insertion bit width">{[8,6,4].map(b=><button key={b} aria-pressed={bits===b} onClick={()=>setBits(b)}>{b} bits</button>)}</div><p className="small">H = 8 · K = 4 · 10 Hz<br/>S2: completed insertion</p></div><div className="panel-surface"><Bars rows={fine}/></div></div>
+  </section>;
 }
 function Real() {
-  const [bits, setBits] = useState(6),
-    [stage, setStage] = useState('insertion_power_pct');
-  const ml = real.find(r => r.method === 'Memoryless' && +r.bits_per_coordinate === bits),
-    cq = real.find(r => r.method === 'CarryQ' && +r.bits_per_coordinate === bits);
-  return <section className="section wrap" id="real"><SectionHead n="Real robot" title="Real-robot charging connector insertion">Charging connector insertion on PiPER with π₀.₅. The goal is complete insertion into a power strip, verified by electrical connection.</SectionHead><div className="real-photos">{[1, 2, 3].map(i => <figure key={i}><img loading="lazy" src={file(`media/real-${i}.jpg`)} alt={['Real PiPER arm approaching the power strip', 'Charging connector aligned with the socket', 'Charging connector successfully inserted'][i - 1]} /><figcaption><span>0{i}</span>{['Approach', 'Align', 'Insert'][i - 1]}</figcaption></figure>)}</div><div className="real-result panel-surface"><div><h3>One policy. A different encoding rule.</h3><p>50 trials per configuration · 10 Hz · K = 4</p><div className="tabs">{[4, 6].map(b => <button key={b} aria-pressed={bits === b} onClick={() => setBits(b)}>{b} bits</button>)}</div><label className="sr-only" htmlFor="real-stage">Outcome stage</label><select id="real-stage" value={stage} onChange={e => setStage(e.target.value)}><option value="insertion_power_pct">S2 · Insertion & power</option><option value="alignment_pct">S1 · Alignment</option></select></div><div className="real-stat"><span className="baseline">Memoryless</span><strong>{ml[stage]}<small>%</small></strong></div><span className="stat-arrow">→</span><div className="real-stat"><span className="ours">CarryQ</span><strong>{cq[stage]}<small>%</small></strong></div></div><p className="caption">The encoders share joint-target differencing, integration and low-level control. Continuous execution achieves 18% S2 success. Full controls and trial counts are in the supplement.</p></section>;
+  return <section className="section wrap" id="real">
+    <SectionHead n="Real robot" title="Real-robot charging connector insertion">Charging connector insertion on PiPER with π₀.₅. The goal is complete insertion into a power strip, verified by electrical connection.</SectionHead>
+    <div className="real-photos">{[1,2,3].map(i=><figure key={i}><img loading="lazy" src={file(`media/real-${i}.jpg`)} alt={['Real PiPER arm approaching the power strip','Charging connector aligned with the socket','Charging connector successfully inserted'][i-1]}/><figcaption><span>0{i}</span>{['Approach','Align','Insert'][i-1]}</figcaption></figure>)}</div>
+    <div className="real-result-head"><h3>One policy. A different encoding rule.</h3><p>50 trials per configuration · 10 Hz · K = 4</p></div>
+    <div className="real-bit-grid">{[4,6].map(bits=>{
+      const ml=real.find(row=>row.method==='Memoryless' && +row.bits_per_coordinate===bits);
+      const cq=real.find(row=>row.method==='CarryQ' && +row.bits_per_coordinate===bits);
+      return <article className="real-bit-card panel-surface" key={bits} aria-label={`${bits}-bit real robot results`}>
+        <div className="real-bit-heading"><h4>{bits}-bit encoding</h4><span>+{+cq.insertion_power_pct-ml.insertion_power_pct} pp</span></div>
+        <p className="real-stage-label">S2 · Insertion & power</p>
+        <div className="real-comparison"><div className="real-stat"><span className="baseline">Memoryless</span><strong>{ml.insertion_power_pct}<small>%</small></strong><span>{ml.insertion_power_successes} / 50 trials</span></div><span className="stat-arrow">→</span><div className="real-stat"><span className="ours">CarryQ</span><strong className="ours">{cq.insertion_power_pct}<small>%</small></strong><span>{cq.insertion_power_successes} / 50 trials</span></div></div>
+        <div className="real-alignment"><span>S1 · Alignment</span><span><b className="baseline">{ml.alignment_pct}%</b><i>→</i><b className="ours">{cq.alignment_pct}%</b></span></div>
+      </article>;
+    })}</div>
+    <p className="caption">The encoders share joint-target differencing, integration and low-level control. Continuous execution achieves 18% S2 success. Full controls and trial counts are in the supplement.</p>
+  </section>;
 }
+
 function Gallery() {
   const [filter, setFilter] = useState('All');
   return <section className="section wrap" id="gallery"><SectionHead n="Video gallery" title="Recorded task comparisons">Selected Memoryless-failure / CarryQ-success pairs, shown side by side with matched cameras.</SectionHead><div className="tabs">{['All', 'Replay', 'Closed-loop'].map(f => <button key={f} aria-pressed={filter === f} onClick={() => setFilter(f)}>{f}</button>)}</div><div className="video-grid">{videos.filter(v => filter === 'All' || v.group === filter).map(v => <div key={v.file}><Video item={v} /><p className="caption">{v.group === 'Replay' ? 'Matched recorded-source replay.' : v.source_id.startsWith('robotwin') ? 'Separate paired SeedPolicy qualitative recording.' : 'Saved paired closed-loop execution.'} 4-bit encoding · complete export at 20 fps.</p></div>)}</div></section>;
@@ -151,9 +141,9 @@ function MethodSection() {
       </div>
       <div className="mechanism-heading">
         <h3>Follow every codeword choice</h3>
-        <p>Change the increment or reset length, then scrub across actions to inspect the residual.</p>
+        <p>Follow the automatic codeword sequence, or change the increment and reset length to inspect the residual.</p>
       </div>
-      <Mechanism />
+      <CodewordExplorer />
       <div className="integration-panel">
         <div>
           <h3>Prediction-time encoding</h3>
@@ -170,6 +160,15 @@ function MethodSection() {
       </div>
     </section>;
 }
+function Citation() {
+  const [copied, setCopied] = useState(false);
+  const bibtex = `@misc{carryq,
+  title = {Beyond Pointwise Accuracy: Temporal Error Structure in Robot Action Tokenization},
+  note = {Authors and arXiv information coming soon}
+}`;
+  return <section className="section wrap citation" id="citation"><div className="citation-heading"><h2>Citation</h2><button onClick={async()=>{await navigator.clipboard.writeText(bibtex);setCopied(true);}}> {copied?'Copied':'Copy BibTeX'} </button></div><p className="caption">Author and arXiv details will be added when available.</p><pre><code>{bibtex}</code></pre></section>;
+}
+
 function App() {
   return <>
     <a className="skip" href="#main">Skip to content</a>
@@ -179,13 +178,15 @@ function App() {
     </div></nav>
     <main id="main">
       <header className="hero wrap">
-        <h1>Beyond Pointwise Accuracy:<br /><span>Temporal Error Structure in Robot Action Tokenization</span></h1>
-        <p className="hero-description">CarryQ · Temporal residual-feedback action encoding</p>
-        <div className="resource-buttons">
-          <a className="button primary" href={supplement}>Supplementary material</a>
-          <a className="button" href={codeLink}>Code</a>
-          <a className="button" href="#method">Method</a>
-          <span className="anonymous-label">Anonymous submission</span>
+        <div className="hero-intro">
+          <h1>Beyond Pointwise Accuracy:<br/><span>Temporal Error Structure in Robot Action Tokenization</span></h1>
+          <p className="hero-description">CarryQ · Temporal residual-feedback action encoding</p>
+          <p className="publication-people"><span>Authors coming soon</span><span>Affiliations coming soon</span></p>
+          <div className="resource-buttons">
+            <a className="button primary" href={paper}>Paper</a>
+            <a className="button" href={codeLink}>Code</a>
+            <a className="button" href={supplement}>Supplementary material</a>
+          </div>
         </div>
         <Workcell />
         <div className="stats">
@@ -211,11 +212,7 @@ function App() {
       <Real />
       <Results />
       <Gallery />
-      <section className="section wrap resources">
-        <SectionHead n="Resources" title="Inspect the method and evidence" />
-        <a className="button primary" href={supplement}>Supplementary PDF</a>
-        <a className="button" href={codeLink}>Source code</a>
-      </section>
+      <Citation />
     </main>
     <footer className="wrap"><a className="brand" href="#"><Mark />CarryQ</a><span>Temporal residual-feedback action encoding</span></footer>
   </>;

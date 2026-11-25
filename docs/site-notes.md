@@ -9,7 +9,9 @@ analytics or external font dependency.
 
 The teaching example computes midpoint quantization directly in grid units.
 Change the source increment, reset interval or action step to inspect residuals
-and cumulative commands. Its curves are computed examples, not trial statistics.
+and cumulative commands. The motivation animation offers 16, 32 and 64 actions,
+with continuous visual interpolation and an eight-action residual reset. Its
+curves are computed examples, not trial statistics.
 Results elsewhere on the page come from the paper's tables; comparisons retain
 their replay, closed-loop or real-robot evaluation setting.
 
@@ -40,7 +42,9 @@ chunk, temporal encoding, decoding, execution and replanning. Its animated inner
 view follows residual addition, quantization and carry over three scalar steps.
 Scalar, vector and joint-target interface labels retain their corresponding
 residual rules. The motivation diagram computes the eight-action example
-directly in grid units and provides play, pause and seek controls.
+directly in grid units and provides play, pause and seek controls. The codeword
+explorer plays automatically when visible, with a quantizer routing view,
+residual dial and per-action trace; it pauses outside the viewport.
 
 Four synchronized sensor images occupy the bottom of the workcell. Click a
 sensor label to select its view in the main viewport. The same renderer and
@@ -121,3 +125,20 @@ The physical layout follows the hand/flange mounting arrangement documented in
 [Franka's camera-mount guide](https://franka.de/hubfs/Setup%20Guide%20for%20Camera%20Mount%20on%20Franka%20Robots_1.1_EN.pdf?hsLang=en)
 and [IndustRealKit](https://github.com/NVlabs/industrealkit).
 Transforms and fields of view are nominal illustration settings.
+
+## Presentation and measured reset data
+
+The charcoal floor and blue work mat separate white robot/tool geometry from
+the workcell. The live and recorded viewers share presentation colors; their
+geometry and action states are unchanged.
+
+The dark reset-response figure retains all 300 measured action positions per
+curve and supports the 75-query view. Its source data are available in
+`data/reset-response.csv`; the bundled data record the source SHA-256, units and
+aggregation. No smoothing or synthetic trial data are used.
+
+Replay, additional-task and closed-loop results appear side by side on desktop
+and stack on narrower screens. Both real-robot bit widths and both outcome
+stages appear together. The Paper button serves the existing manuscript PDF.
+Authors, affiliations and citation publication details remain coming-soon
+placeholders until their release.

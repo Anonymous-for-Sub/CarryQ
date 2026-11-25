@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { TASKS } from "../src/task.js";
+import { WORKCELL_COLORS, linearRgba } from "../src/workcellAppearance.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { capsuleRing, outletDeck } from "./connector-meshes.mjs";
 const root = new URL("../public/franka/", import.meta.url);
@@ -118,7 +119,7 @@ let fixtures = box(
   "table",
   "0.30 0 -0.025",
   "0.68 1.0 0.025",
-  "0.48 0.51 0.52 1",
+  linearRgba(WORKCELL_COLORS.mat),
 );
 for (const t of TASKS) {
   fixtures += `<body name="${t.key}_fixture" pos="${t.x} ${t.y} 0">`;
@@ -285,7 +286,7 @@ const xml = `<mujoco model="precision insertion">
     <mesh name="usb_base_mesh" file="assets/usb-base.obj"/>
   </asset>
   <worldbody>
-    <geom name="floor" type="plane" pos="0 0 -0.055" size="3 3 0.01" rgba="0.77 0.77 0.71 1"/>
+    <geom name="floor" type="plane" pos="0 0 -0.055" size="3 3 0.01" rgba="${linearRgba(WORKCELL_COLORS.floor)}"/>
     <frame pos="0 -0.42 0"><attach model="usb_arm" body="link0" prefix="usb_"/></frame>
     <frame pos="0 0.42 0"><attach model="charger_arm" body="link0" prefix="charger_"/></frame>
     ${fixtures}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./method-figures.css";
 import paperArchitecture from "./figures/paper-architecture.svg?raw";
 import { encodeExample } from "./encoding.mjs";
+import ResetResponse from "./ResetResponse.jsx";
 const assets = import.meta.env.BASE_URL + "figures/";
 const signed = value => (value < 0 ? "−" : "+") + Math.abs(value).toFixed(2);
 export function PaperFigure({
@@ -178,7 +179,7 @@ export function TemporalEvidence() {
           <div className="ledger-result"><strong>−{reduction}%</strong><span>squared endpoint error</span></div>
           <figcaption>Means over chunks from 12 LIBERO tasks. Bar lengths use the memoryless endpoint as the unit. The hatched segment subtracts from L when X is negative.</figcaption>
         </figure>
-        <PaperFigure name="reset-response.png" className="reset-figure" alt="Cumulative prefix cost across 300 executed actions for Memoryless, two-step reset and CarryQ" caption={<><b>Residual lifetime.</b> On the same Can source commands, keeping feedback over all four actions reduces prefix cost across 75 queries.</>} />
+        <ResetResponse />
       </div>
     </section>;
 }

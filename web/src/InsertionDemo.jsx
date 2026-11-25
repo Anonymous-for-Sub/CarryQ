@@ -27,6 +27,7 @@ import {
 import { Cables } from "./Cables.jsx";
 import { TaskCameras } from "./TaskCameras.jsx";
 import CameraFeedLabels from "./CameraFeedLabels.jsx";
+import { WORKCELL_COLORS } from "./workcellAppearance.js";
 
 
 const config = {
@@ -340,7 +341,7 @@ export default function InsertionDemo() {
             onReady={setReady}
             onTask={setActiveTask}
           />
-          <color attach="background" args={["#d8d2b5"]} />
+          <color attach="background" args={[WORKCELL_COLORS.background]} />
           <ambientLight intensity={0.8} />
           <directionalLight
             position={[1, -2, 5]}

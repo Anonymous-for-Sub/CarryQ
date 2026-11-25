@@ -106,3 +106,16 @@ The Panda assets are from MuJoCo Menagerie (Apache-2.0); their license is preser
 in `public/franka/LICENSE`. The copied model retains the reference application's
 actuator tuning. USB-C and two-blade socket geometry is illustrative rather than
 a certified connector CAD model. Do not use this controller on physical hardware.
+
+## Website explanations and result panels
+
+`useActionPlayback.js` drives the continuous, viewport-aware teaching animations.
+`CodewordExplorer.jsx` shows automatic codeword routing and residual state.
+`ResetResponse.jsx` renders the original aggregate reset measurements from
+`reset-response.json`; the matching downloadable CSV is in `public/data/`.
+`workcellAppearance.js` shares floor, mat and background colors between scene
+generation and recorded playback.
+
+Check this presentation with `node scripts/check-refinement.mjs URL`; it tests
+autoplay, action horizons, measured point counts, parallel results and mobile
+layout. The before-revision website remains available in Git history.

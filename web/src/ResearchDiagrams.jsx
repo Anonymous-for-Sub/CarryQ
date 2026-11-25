@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { encodeExample } from "./encoding.mjs";
+import { useActionPlayback } from "./useActionPlayback.js";
 import "./research-diagrams.css";
 
 function usePlayback(length, delay) {
@@ -33,63 +34,71 @@ function DiagramControls({playback, length, label}) {
 }
 
 export function MotivationDiagram() {
-  const playback = usePlayback(8, 900);
-  const rows = encodeExample({increment: 1.25 / 8, reset: 8, steps: 8});
-  const row = rows[Math.max(0, playback.step - 1)];
-  const endpoint = playback.step ? row.requested : 0;
-  const ml = playback.step ? row.mlSum : 0;
-  const cq = playback.step ? row.cqSum : 0;
-  const x = t => 535 + t * 61;
-  const y = value => 277 - value * 45;
-  const line = key => [[x(0), y(0)], ...rows.slice(0, playback.step).map(item => [x(item.step), y(item[key])])].map(point => point.join(",")).join(" ");
+  const [length, setLength] = useState(32);
+  const playback = useActionPlayback(length, .42);
+  const rows = encodeExample({increment: 1.25 / 8, reset: 8, steps: length});
+  const completed = Math.floor(playback.progress);
+  const fraction = playback.progress - completed;
+  const before = completed ? rows[completed - 1] : {requested: 0, mlSum: 0, cqSum: 0};
+  const after = rows[Math.min(completed, length - 1)];
+  const value = key => before[key] + (after[key] - before[key]) * fraction;
+  const x = t => 535 + t / length * 488;
+  const max = length * .5 * 1.08;
+  const y = value => 277 - value / max * 187;
+  const line = key => [[x(0), y(0)], ...rows.slice(0, completed).map(item => [x(item.step), y(item[key])]),
+    ...(fraction ? [[x(playback.progress), y(value(key))]] : [])].map(point => point.join(",")).join(" ");
+  const ticks = [0, length / 4, length / 2, length * .75, length];
+  const cursor = x(playback.progress);
   return <figure className={"research-diagram motivation-diagram"+(playback.playing?" is-playing":"")} ref={playback.host}>
     <div className="diagram-topline"><h3>One small command, repeated over time</h3><div className="diagram-legend"><span className="source-key">Requested</span><span className="ml-key">Memoryless</span><span className="cq-key">CarryQ</span></div></div>
     <div className="diagram-scroll">
-      <svg viewBox="0 0 1100 340" role="img" aria-label="Animated small-increment quantization and cumulative command sums over eight actions">
-        <defs><marker id="mot-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="#6b7291"/></marker></defs>
+      <svg viewBox="0 0 1100 340" role="img" aria-label={`Continuous animation of ${length} computed actions and cumulative command sums`}>
         <rect className="diagram-zone" x="16" y="20" width="233" height="289" rx="12"/>
         <text className="diagram-section-label" x="34" y="46">FINE ALIGNMENT</text>
         <g className="connector-sketch">
-          <path d="M53 102h72v52H53zM68 154v29h9v-29M104 154v29h9v-29" />
-          <path d="M85 78v24M94 78v24M54 222h142v38H54zM77 235h17M130 235h17" />
-          <path className="source-stroke" d="M153 113v80" markerEnd="url(#mot-arrow)" strokeDasharray="4 5"/>
-          <path className="cq-stroke" d={`M61 ${102 + playback.step * 1.3}h57`} />
+          <g transform={`translate(0 ${12 * Math.min(1, playback.progress / 8)})`}><path d="M53 102h72v52H53zM68 154v29h9v-29M104 154v29h9v-29M85 78v24M94 78v24"/><path className="cq-stroke" d="M61 113h57"/></g>
+          <path d="M54 222h142v38H54zM77 235h17M130 235h17"/>
+          <path className="source-stroke" d="M153 113v80" strokeDasharray="4 5"/>
+          <circle className="source-dot" cx="153" cy={113 + 80 * fraction} r="4"/>
         </g>
-        <text x="34" y="284" className="diagram-note">Small requested increment</text>
+        <text x="34" y="284" className="diagram-note">A small increment at every step</text>
         <rect className="diagram-zone" x="269" y="20" width="215" height="289" rx="12"/>
         <text className="diagram-section-label" x="287" y="46">SAME QUANTIZATION GRID</text>
         <line className="axis-stroke" x1="327" y1="83" x2="327" y2="233"/>
-        <line className="axis-stroke" x1="318" y1="103" x2="337" y2="103"/>
-        <line className="axis-stroke" x1="318" y1="158" x2="337" y2="158"/>
-        <line className="axis-stroke" x1="318" y1="213" x2="337" y2="213"/>
+        {[103,158,213].map(cy => <line key={cy} className="axis-stroke" x1="318" y1={cy} x2="337" y2={cy}/>)}
         <text x="304" y="108" textAnchor="end">+½</text><text x="304" y="163" textAnchor="end">0</text><text x="304" y="218" textAnchor="end">−½</text>
         <circle className="source-dot" cx="327" cy="141" r="6"/>
         <circle className="ml-dot" cx="327" cy="103" r="6"/>
-        <path className="diagram-wire" d="M341 141H367V103H341" />
+        <path className="diagram-wire" d="M341 141H367V103H341"/>
         <text className="source-text" x="351" y="165">aₜ = 0.15625Δ</text>
         <text className="ml-text" x="351" y="94">qₜ = 0.50Δ</text>
-        <text x="287" y="264" className="diagram-note">Memoryless repeats</text>
-        <text x="287" y="284" className="diagram-note">the same positive error.</text>
+        <text x="287" y="264" className="diagram-note">Same-sign error repeats:</text>
+        <text x="287" y="284" className="source-text">+0.34375Δ per action</text>
         <text className="diagram-section-label" x="535" y="46">CUMULATIVE COMMAND</text>
-        {[0, 1, 2, 3, 4].map(value => <g key={value}><line className="chart-grid" x1="535" x2="1023" y1={y(value)} y2={y(value)}/><text className="axis-label" x="523" y={y(value) + 4} textAnchor="end">{value}Δ</text></g>)}
-        {[0, 2, 4, 6, 8].map(t => <text key={t} className="axis-label" x={x(t)} y="301" textAnchor="middle">{t}</text>)}
-        <text className="diagram-note" x="1023" y="326" textAnchor="end">Executed actions</text>
+        {Array.from({length: length / 8}, (_,i) => <g key={i}><rect x={x(i*8)} y="78" width={488*8/length} height="199" fill={i%2 ? "#8080ff08" : "transparent"}/>{i>0 && <line className="window-boundary" x1={x(i*8)} x2={x(i*8)} y1="78" y2="277"/>}</g>)}
+        {[0,.25,.5,.75,1].map(ratio => <g key={ratio}><line className="chart-grid" x1="535" x2="1023" y1={y(ratio*length*.5)} y2={y(ratio*length*.5)}/><text className="axis-label" x="523" y={y(ratio*length*.5)+4} textAnchor="end">{ratio*length*.5}Δ</text></g>)}
+        {ticks.map(t => <text key={t} className="axis-label" x={x(t)} y="301" textAnchor="middle">{t}</text>)}
+        <text className="diagram-note" x="1023" y="326" textAnchor="end">Executed actions · 8-action reset windows</text>
+        <line x1={cursor} x2={cursor} y1="78" y2="277" className="action-cursor"/>
         <polyline className="diagram-curve source-stroke" points={line("requested")}/>
         <polyline className="diagram-curve ml-stroke" points={line("mlSum")}/>
         <polyline className="diagram-curve cq-stroke" points={line("cqSum")}/>
-        <circle className="source-dot" cx={x(playback.step)} cy={y(endpoint)} r="5"/>
-        <circle className="ml-dot" cx={x(playback.step)} cy={y(ml)} r="5"/>
-        <circle className="cq-dot" cx={x(playback.step)} cy={y(cq)} r="5"/>
+        {[["requested","source-dot"],["mlSum","ml-dot"],["cqSum","cq-dot"]].map(([key,color])=><circle key={key} className={color} cx={cursor} cy={y(value(key))} r="5"/>)}
       </svg>
     </div>
     <div className="motivation-readouts">
-      <span>Requested sum <b className="source-text">{endpoint.toFixed(2)}Δ</b></span>
-      <span>Memoryless sum <b className="ml-text">{ml.toFixed(2)}Δ</b></span>
-      <span>CarryQ sum <b className="cq-text">{cq.toFixed(2)}Δ</b></span>
-      <span>Memoryless discrepancy <b>{(ml - endpoint).toFixed(2)}Δ</b></span>
+      <span>Requested sum <b className="source-text">{value("requested").toFixed(2)}Δ</b></span>
+      <span>Memoryless sum <b className="ml-text">{value("mlSum").toFixed(2)}Δ</b></span>
+      <span>CarryQ sum <b className="cq-text">{value("cqSum").toFixed(2)}Δ</b></span>
+      <span>Memoryless discrepancy <b>{(value("mlSum")-value("requested")).toFixed(2)}Δ</b></span>
     </div>
-    <DiagramControls playback={playback} length={8} label="Executed actions"/>
-    <figcaption>Computed scalar example. CarryQ changes the sequence of codeword choices so that successive errors compensate.</figcaption>
+    <div className="diagram-controls motivation-controls">
+      <button onClick={playback.toggle}>{playback.playing ? "Pause animation" : "Play animation"}</button>
+      <label>Executed actions<input aria-label="Executed actions" type="range" min="0" max={length} step=".01" value={playback.progress} onChange={event=>playback.seek(+event.target.value)}/></label>
+      <output>{completed} / {length}</output>
+      <select aria-label="Animation action count" value={length} onChange={event=>setLength(+event.target.value)}>{[16,32,64].map(n=><option key={n} value={n}>{n} actions</option>)}</select>
+    </div>
+    <figcaption>Computed scalar example. The display interpolates between discrete action sums; CarryQ resets at every eight-action window.</figcaption>
   </figure>;
 }
 

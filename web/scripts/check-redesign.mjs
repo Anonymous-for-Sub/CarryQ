@@ -19,7 +19,7 @@ try {
   await page.goto(process.argv[2] || "http://127.0.0.1:38125/CarryQ/", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => document.querySelector("#playback-view")?.disabled === false);
   assert.ok(!requests.some((url) => url.includes("/franka/") || url.includes("/InsertionDemo-")));
-  assert.ok(await page.locator(".recorded-canvas").evaluate((element) => element.getBoundingClientRect().bottom < innerHeight));
+  assert.ok(await page.locator(".recorded-canvas").evaluate((element) => element.getBoundingClientRect().top < innerHeight && element.getBoundingClientRect().height >= 600));
 
   const demo = page.locator("#demo");
   await demo.getByRole("button", { name: "Play", exact: true }).click();
