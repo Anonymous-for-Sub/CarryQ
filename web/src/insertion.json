@@ -1,0 +1,98 @@
+[
+  {
+    "bits": "8",
+    "method": "Memoryless",
+    "task": "USB-C",
+    "episodes": "120",
+    "s2_successes": "17",
+    "s2_pct": "14.16666667"
+  },
+  {
+    "bits": "8",
+    "method": "Memoryless",
+    "task": "Charger",
+    "episodes": "120",
+    "s2_successes": "20",
+    "s2_pct": "16.66666667"
+  },
+  {
+    "bits": "8",
+    "method": "CarryQ",
+    "task": "USB-C",
+    "episodes": "120",
+    "s2_successes": "49",
+    "s2_pct": "40.83333333"
+  },
+  {
+    "bits": "8",
+    "method": "CarryQ",
+    "task": "Charger",
+    "episodes": "120",
+    "s2_successes": "55",
+    "s2_pct": "45.83333333"
+  },
+  {
+    "bits": "6",
+    "method": "Memoryless",
+    "task": "USB-C",
+    "episodes": "120",
+    "s2_successes": "9",
+    "s2_pct": "7.50000000"
+  },
+  {
+    "bits": "6",
+    "method": "Memoryless",
+    "task": "Charger",
+    "episodes": "120",
+    "s2_successes": "11",
+    "s2_pct": "9.16666667"
+  },
+  {
+    "bits": "6",
+    "method": "CarryQ",
+    "task": "USB-C",
+    "episodes": "120",
+    "s2_successes": "32",
+    "s2_pct": "26.66666667"
+  },
+  {
+    "bits": "6",
+    "method": "CarryQ",
+    "task": "Charger",
+    "episodes": "120",
+    "s2_successes": "36",
+    "s2_pct": "30.00000000"
+  },
+  {
+    "bits": "4",
+    "method": "Memoryless",
+    "task": "USB-C",
+    "episodes": "120",
+    "s2_successes": "3",
+    "s2_pct": "2.50000000"
+  },
+  {
+    "bits": "4",
+    "method": "Memoryless",
+    "task": "Charger",
+    "episodes": "120",
+    "s2_successes": "4",
+    "s2_pct": "3.33333333"
+  },
+  {
+    "bits": "4",
+    "method": "CarryQ",
+    "task": "USB-C",
+    "episodes": "120",
+    "s2_successes": "12",
+    "s2_pct": "10.00000000"
+  },
+  {
+    "bits": "4",
+    "method": "CarryQ",
+    "task": "Charger",
+    "episodes": "120",
+    "s2_successes": "14",
+    "s2_pct": "11.66666667"
+  }
+]

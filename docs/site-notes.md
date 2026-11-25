@@ -1,6 +1,31 @@
-# Franka precision insertion
+# CarryQ project page
 
-One MuJoCo workcell contains two Franka Panda arms and two insertion tasks:
+The page presents the paper's temporal-error argument, interactive encoding
+arithmetic, real-robot photographs, tabulated results and recorded comparisons.
+The purple theme uses `#8080FF`. It has no author-identifying profile,
+analytics or external font dependency.
+
+## Interactive encoding
+
+The teaching example computes midpoint quantization directly in grid units.
+Change the source increment, reset interval or action step to inspect residuals
+and cumulative commands. Its curves are computed examples, not trial statistics.
+Results elsewhere on the page come from the paper's tables; comparisons retain
+their replay, closed-loop or real-robot evaluation setting.
+
+## Recorded video
+
+Eight complete Memoryless-failure / CarryQ-success comparisons cover scalar,
+vector and Praxis replay, LIBERO Spatial/Pro/Plus, robomimic Can and RoboTwin.
+Each recording retains its original timeline and side-by-side labels. The
+RoboTwin recording is a separate paired SeedPolicy qualitative example.
+`media/manifest.json` records video identities, hashes, durations and encoding
+quality. The three real-robot photographs show approach, alignment and insertion.
+
+## Embedded live workcell
+
+Choose **Launch live workcell** in the Live demo section. It loads in that
+section without navigation to another page. One MuJoCo workcell contains two Franka Panda arms and two insertion tasks:
 
 1. Insert a USB-C plug into a fixed USB-C receptacle.
 2. Insert the two AC blades of a compact white charger into a power strip.
@@ -14,7 +39,6 @@ in hand coordinates. The sensor views are not orbitable. Camera housings and
 stands are visual only and do not change the task dynamics. Fields of view
 are nominal illustration settings, not physical sensor calibration.
 
-The upper-right heading identifies CarryQ, the paper title and the current task.
 Before insertion, the arm approaches with a small lateral offset, centers above
 the socket, and lowers into alignment. These are scripted joint-control stages,
 not observations from a learned policy. Curved cables follow the connector pose

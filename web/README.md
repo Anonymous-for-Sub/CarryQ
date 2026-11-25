@@ -1,4 +1,9 @@
-# Precision insertion scene
+# CarryQ research project page
+
+The React page combines an interactive encoding example, paper results,
+real-robot photographs, eight recorded comparison videos and the insertion
+workcell. The workcell is a lazily loaded React component on the same page;
+there is no iframe or separate demo route. Colors center on `#8080FF`.
 
 The scene reuses the Franka Panda MJCF and meshes, MuJoCo React loading/rendering,
 inverse-kinematics solver, and compact control-panel design of the reference
@@ -15,9 +20,16 @@ npm run build:pages
 
 For browser checks, start the development server, install Playwright Chromium
 with `npx playwright install chromium`, and run `npm run test:browser` in another
-terminal. The check uses software rendering and verifies both insertions,
+terminal. The project-page interaction check is `node scripts/check-project.mjs URL`.
+The scene check uses software rendering and verifies both insertions,
 measured seating, reset, pause/resume and a mobile viewport. Unit tests run with
 `npm test`. The production site can be checked by passing its URL after `--`.
+
+For a portable supplementary build, set `CARRYQ_BASE=./` and
+`VITE_SUPPLEMENTARY=true`; this makes resource links point to `../appendix.pdf`
+and `../code/README.md`. Serve the package root over HTTP so local JavaScript
+modules and MuJoCo assets can load. Remove the duplicate `appendix.pdf` from
+that website build; the package uses its unchanged root copy.
 
 The build writes the static site to `docs/` for GitHub Pages at `/CarryQ/`.
 `scripts/build-scene.mjs` generates the task MJCF from `public/franka/panda.xml`.

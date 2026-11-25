@@ -25,6 +25,8 @@ try {
     waitUntil: "domcontentloaded",
     timeout: 120000,
   });
+  await page.getByRole('button', {name: /Launch live workcell/}).click();
+  await page.locator('.demo-stage').scrollIntoViewIfNeeded();
   await page.waitForFunction(
     () =>
       document.querySelector("[role=status]")?.textContent.startsWith("Ready"),
@@ -33,7 +35,7 @@ try {
   );
   assert.equal(await page.evaluate(() => window.__insertion.actuators), 16);
   assert.ok((await page.evaluate(() => window.__insertion.meshes)) > 100);
-  assert.equal(await page.locator(".project-name").textContent(), "CarryQ");
+
   assert.match(
     await page.getByRole("heading", { level: 1 }).textContent(),
     /Beyond Pointwise Accuracy/,
@@ -96,16 +98,11 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(300);
   const rects = await page.evaluate(() => {
-    const a = document
-      .querySelector(".project-heading")
-      .getBoundingClientRect();
-    const b = document.querySelector(".panel").getBoundingClientRect();
-    return { titleBottom: a.bottom, controlsTop: b.top };
+    const canvas = document.querySelector('.demo-stage canvas').getBoundingClientRect();
+    const controls = document.querySelector('.demo-stage .panel').getBoundingClientRect();
+    return {canvasBottom:canvas.bottom,controlsTop:controls.top};
   });
-  assert.ok(
-    rects.titleBottom <= rects.controlsTop,
-    "mobile heading overlaps controls",
-  );
+  assert.ok(rects.canvasBottom <= rects.controlsTop, 'mobile controls overlap canvas');
   await capture('mobile');
   assert.ok(
     await page.evaluate(

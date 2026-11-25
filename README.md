@@ -1,10 +1,8 @@
 <div align="center">
 
-# CarryQ
+# Beyond Pointwise Accuracy: Temporal Error Structure in Robot Action Tokenization
 
-### Temporal Residual-Feedback Action Encoding
-
-**Beyond Pointwise Accuracy: Temporal Error Structure in Robot Action Tokenization**
+### CarryQ · Temporal Residual-Feedback Action Encoding
 
 [![Tests](https://github.com/Anonymous-for-Sub/CarryQ/actions/workflows/tests.yml/badge.svg)](https://github.com/Anonymous-for-Sub/CarryQ/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](#installation)
@@ -112,14 +110,15 @@ handling, vector lookup and invalid inputs. See [CONTRIBUTING.md](CONTRIBUTING.m
 
 ## Project page
 
-[Open the precision workcell](https://anonymous-for-sub.github.io/CarryQ/):
-two Franka Panda arms performing USB-C and charger-to-power-strip insertion
-in MuJoCo. Orbit the workcell, inspect each interface in close-up, and play
-either or both tasks. This is a scripted physics demonstration with pre-held
-parts, not a learned-policy rollout or an experimental result.
+[Explore the project page](https://anonymous-for-sub.github.io/CarryQ/):
+recorded Memoryless–CarryQ comparisons, interactive residual-feedback arithmetic,
+simulation and real-robot results, and an embedded two-arm insertion workcell.
+The workcell loads within the same page and supports task selection, playback,
+reset and seven camera views. It illustrates scripted MuJoCo insertion; the
+separate recorded videos show policy comparisons.
 
-The static site is served from `docs/`. See [scene notes](docs/site-notes.md)
-for controls and local preview instructions.
+The React source is in `web/`; its static build is served from `docs/`.
+See [website notes](docs/site-notes.md) for controls and evidence sources.
 
 ## Paper
 

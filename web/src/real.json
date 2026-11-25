@@ -1,0 +1,65 @@
+[
+  {
+    "method": "Continuous",
+    "bits_per_coordinate": "Full",
+    "trials": "50",
+    "alignment_successes": "19",
+    "alignment_pct": "38",
+    "insertion_power_successes": "9",
+    "insertion_power_pct": "18"
+  },
+  {
+    "method": "Memoryless",
+    "bits_per_coordinate": "4",
+    "trials": "50",
+    "alignment_successes": "10",
+    "alignment_pct": "20",
+    "insertion_power_successes": "3",
+    "insertion_power_pct": "6"
+  },
+  {
+    "method": "CarryQ",
+    "bits_per_coordinate": "4",
+    "trials": "50",
+    "alignment_successes": "27",
+    "alignment_pct": "54",
+    "insertion_power_successes": "18",
+    "insertion_power_pct": "36"
+  },
+  {
+    "method": "Memoryless",
+    "bits_per_coordinate": "6",
+    "trials": "50",
+    "alignment_successes": "17",
+    "alignment_pct": "34",
+    "insertion_power_successes": "8",
+    "insertion_power_pct": "16"
+  },
+  {
+    "method": "CarryQ",
+    "bits_per_coordinate": "6",
+    "trials": "50",
+    "alignment_successes": "32",
+    "alignment_pct": "64",
+    "insertion_power_successes": "21",
+    "insertion_power_pct": "42"
+  },
+  {
+    "method": "Absolute Memoryless",
+    "bits_per_coordinate": "4",
+    "trials": "50",
+    "alignment_successes": "8",
+    "alignment_pct": "16",
+    "insertion_power_successes": "2",
+    "insertion_power_pct": "4"
+  },
+  {
+    "method": "Absolute Memoryless",
+    "bits_per_coordinate": "6",
+    "trials": "50",
+    "alignment_successes": "14",
+    "alignment_pct": "28",
+    "insertion_power_successes": "6",
+    "insertion_power_pct": "12"
+  }
+]
