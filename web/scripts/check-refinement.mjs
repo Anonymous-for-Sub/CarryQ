@@ -42,19 +42,24 @@ try {
 
   const reset=page.locator('.reset-response');
   await reset.scrollIntoViewIfNeeded();
-  assert.equal(await reset.locator('polyline').first().getAttribute('points').then(value=>value.split(' ').length),301);
+  assert.equal(await reset.locator('.reset-chart').count(),2);
+  assert.equal(await reset.locator('[data-mode="cumulative"] polyline').first().getAttribute('points').then(value=>value.split(' ').length),301);
+  assert.equal(await reset.locator('[data-mode="queries"] polyline').first().getAttribute('points').then(value=>value.split(' ').length),75);
   assert.match(await reset.locator('.reset-reduction').innerText(),/35.14/);
-  await reset.getByRole('button',{name:'Per query',exact:true}).click();
-  assert.equal(await reset.locator('polyline').first().getAttribute('points').then(value=>value.split(' ').length),75);
-  await reset.getByRole('button',{name:'Cumulative',exact:true}).click();
+  assert.equal(await page.locator('.ledger-bit').count(),2);
+  assert.equal(await page.locator('.codeword-explorer .tag').count(),0);
+  assert.equal(await page.locator('.real-stage-label').count(),0);
+  assert.ok(!(await page.locator('#real').innerText()).includes('3 / 50 trials'));
   await reset.screenshot({path:folder+'/reset-response.png'});
 
   await page.locator('#real').screenshot({path:folder+'/real.png'});
   assert.equal(await page.locator('.real-bit-card').count(),2);
   assert.match(await page.getByRole('article',{name:'4-bit real robot results',exact:true}).innerText(),/36/);
   assert.match(await page.getByRole('article',{name:'6-bit real robot results',exact:true}).innerText(),/42/);
-  const tops=await page.locator('.evaluation-card').evaluateAll(elements=>elements.map(element=>element.getBoundingClientRect().top));
-  assert.equal(tops.length,3); assert.ok(tops.every(top=>Math.abs(top-tops[0])<2));
+  const boxes=await page.locator('.evaluation-card').evaluateAll(elements=>elements.map(element=>({left:element.getBoundingClientRect().left,top:element.getBoundingClientRect().top})));
+  assert.equal(boxes.length,3);
+  assert.ok(Math.abs(boxes[0].left-boxes[1].left)<2 && boxes[1].top>boxes[0].top);
+  assert.ok(boxes[2].left>boxes[0].left && Math.abs(boxes[2].top-boxes[0].top)<2);
   await page.locator('#results').screenshot({path:folder+'/results.png'});
   await page.locator('#citation').screenshot({path:folder+'/citation.png'});
   assert.equal(await page.locator('.resources').count(),0);

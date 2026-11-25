@@ -135,51 +135,31 @@ const terms = {
   6: [["Memoryless", 0.005943, 0.016570, 0.022514], ["CarryQ", 0.008486, -0.008046, 0.000439]]
 };
 export function TemporalEvidence() {
-  const [bits, setBits] = useState(4);
-  const data = terms[bits];
-  const scale = data[0][3];
-  const reduction = bits === 4 ? "98.46" : "98.05";
   return <section className="section wrap" id="analysis">
-      <div className="section-head">
-        <div className="eyebrow">Temporal analysis</div>
-        <h2>Why cumulative error falls</h2>
-        <p>CarryQ changes how errors add together across an execution window.</p>
-      </div>
-      <div className="analysis-grid">
-        <figure className="technical-figure ledger">
-          <div className="figure-heading">
-            <h3>Local energy and cross-time interaction</h3>
-            <div className="figure-options" role="group" aria-label="Decomposition bit width">
-              {[4, 6].map(b => <button key={b} aria-pressed={bits === b} onClick={() => setBits(b)}>{b} bits</button>)}
-            </div>
-          </div>
-          <div className="ledger-key">
-            <span><i className="l" /> Local energy L</span>
-            <span><i className="x" /> Cross-time term X</span>
-            <span><i className="t" /> Endpoint T</span>
-          </div>
-          <div className="ledger-rows">
-            {data.map(([method, local, cross, total]) => <div className="ledger-row" key={method}>
-                <div className="ledger-label"><b>{method}</b><span>T = {total.toFixed(bits === 4 ? 5 : 6)}</span></div>
-                <div className="ledger-track" role="img" aria-label={`L ${local}, X ${cross}, T ${total}`}>
-                  <i className="l" style={{
-                width: local / scale * 100 + "%"
-              }} />
-                  <i className={cross < 0 ? "x cancel" : "x"} style={{
-                left: (cross < 0 ? total : local) / scale * 100 + "%",
-                width: Math.abs(cross) / scale * 100 + "%"
-              }} />
-                  <i className="t" style={{
-                left: total / scale * 100 + "%"
-              }} />
-                </div>
-                <small>{cross < 0 ? "← Errors partly cancel" : "Errors reinforce →"}</small>
-              </div>)}
-          </div>
-          <div className="ledger-result"><strong>−{reduction}%</strong><span>squared endpoint error</span></div>
-          <figcaption>Means over chunks from 12 LIBERO tasks. Bar lengths use the memoryless endpoint as the unit. The hatched segment subtracts from L when X is negative.</figcaption>
-        </figure>
-        <ResetResponse />
-      </div>
-    </section>;
+    <div className="section-head"><h2>Why cumulative error falls</h2><p>CarryQ changes how errors add together across an execution window.</p></div>
+    <div className="analysis-grid">
+      <figure className="technical-figure ledger">
+        <div className="figure-heading"><h3>Local energy and cross-time interaction</h3><span className="ledger-equation">T = L + X</span></div>
+        <div className="ledger-key"><span><i className="l"/>Local energy L</span><span><i className="x"/>Cross-time term X</span><span><i className="t"/>Endpoint T</span></div>
+        <div className="ledger-bit-grid">{[4,6].map(bits=>{
+          const data=terms[bits], scale=data[0][3];
+          const reduction=bits===4?'98.46':'98.05';
+          return <div className="ledger-bit" key={bits} aria-label={`${bits}-bit error decomposition`}>
+            <div className="ledger-bit-heading"><h4>{bits} bits</h4><span>{reduction}% lower endpoint error</span></div>
+            {data.map(([method,local,cross,total])=><div className="ledger-row" key={method}>
+              <div className="ledger-label"><b>{method}</b><span>T = {total.toFixed(bits===4?5:6)}</span></div>
+              <div className="ledger-track" role="img" aria-label={`L ${local}, X ${cross}, T ${total}`}>
+                <i className="l" style={{width:local/scale*100+'%'}}/>
+                <i className={cross<0?'x cancel':'x'} style={{left:(cross<0?total:local)/scale*100+'%',width:Math.abs(cross)/scale*100+'%'}}/>
+                <i className="t" style={{left:total/scale*100+'%'}}/>
+              </div>
+              <span className="ledger-effect">{cross<0?'Cross-time cancellation':'Cross-time reinforcement'}</span>
+            </div>)}
+          </div>;
+        })}</div>
+        <figcaption>Means across 12 LIBERO tasks. Each bit width uses its Memoryless endpoint as the unit. The hatched region shows cancellation of local error.</figcaption>
+      </figure>
+      <ResetResponse/>
+    </div>
+  </section>;
 }

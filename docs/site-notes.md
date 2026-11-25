@@ -128,17 +128,24 @@ Transforms and fields of view are nominal illustration settings.
 
 ## Presentation and measured reset data
 
-The charcoal floor and blue work mat separate white robot/tool geometry from
-the workcell. The live and recorded viewers share presentation colors; their
-geometry and action states are unchanged.
+Scanned wood and blue woven surfaces separate the white robot/tool geometry
+from the workcell. Live and recorded views share the same color, normal and
+roughness maps. Material sources and export hashes are in `materials/sources.json`;
+credits are in `materials/CREDITS.md`. Robot geometry and action states are unchanged.
 
 The dark reset-response figure retains all 300 measured action positions per
-curve and supports the 75-query view. Its source data are available in
+curve and shows the 75-query view alongside cumulative cost. Its source data are available in
 `data/reset-response.csv`; the bundled data record the source SHA-256, units and
 aggregation. No smoothing or synthetic trial data are used.
 
-Replay, additional-task and closed-loop results appear side by side on desktop
-and stack on narrower screens. Both real-robot bit widths and both outcome
+Replay and additional-task results stack in the left column, with closed-loop
+results on the right. They stack on narrower screens. Both real-robot bit widths and both outcome
 stages appear together. The Paper button serves the existing manuscript PDF.
 Authors, affiliations and citation publication details remain coming-soon
 placeholders until their release.
+
+The temporal-error decomposition displays 4 and 6 bits together. The motivation
+view adds a shaded command gap and an eight-action local view of requested and
+CarryQ cumulative commands. Both are derived from the same existing encoding
+calculation; no values are amplified or changed. Website reading text uses a
+more uniform type scale, with redundant labels removed.

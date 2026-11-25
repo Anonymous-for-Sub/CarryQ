@@ -13,6 +13,7 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage({ viewport: { width: Number(process.env.CARRYQ_CHECK_WIDTH || 1000), height: 740 } });
 const errors = [];
+const controls = page.locator('.demo-stage .panel');
 const screenshots=process.env.CARRYQ_SCREENSHOTS;
 if(screenshots)await mkdir(screenshots,{recursive:true});
 const capture=async(name)=>{if(screenshots)await page.screenshot({path:`${screenshots}/${name}.png`});};
@@ -54,7 +55,7 @@ try {
         window.__phaseHistory.push(p);
     }, 40);
   });
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await controls.getByRole("button", { name: "Play", exact: true }).click();
   await page.waitForFunction(
     () =>
       document.querySelector("[role=status]")?.textContent.includes("Seated") ||
@@ -77,7 +78,7 @@ try {
     await page.getByLabel("View", { exact: true }).selectOption(view);
     await page.waitForTimeout(400);await capture(`${view}-seated`);
   }
-  await page.getByRole("button", { name: "Reset", exact: true }).click();
+  await controls.getByRole("button", { name: "Reset", exact: true }).click();
   await page.waitForFunction(
     () =>
       document.querySelector("[role=status]")?.textContent.startsWith("Ready"),
@@ -87,14 +88,14 @@ try {
   await page.waitForFunction(() =>
     window.__insertion?.measurements.every((m) => !m.seated),
   );
-  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await controls.getByRole("button", { name: "Play", exact: true }).click();
   await page.waitForTimeout(600);
-  await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await controls.getByRole("button", { name: "Pause", exact: true }).click();
   await page.waitForTimeout(300);
   const time = await page.evaluate(() => window.__insertion.time);
   await page.waitForTimeout(400);
   assert.equal(await page.evaluate(() => window.__insertion.time), time);
-  await page.getByRole("button", { name: "Resume", exact: true }).click();
+  await controls.getByRole("button", { name: "Resume", exact: true }).click();
   await page.waitForFunction((t) => window.__insertion.time > t, time);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(300);

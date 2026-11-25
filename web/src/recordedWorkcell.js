@@ -2,11 +2,13 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {unpackGeometry,loadPackedJson,loadCameraModels,createCameraRig,renderCameraViews} from "./cameraRig.js";
 import { WORKCELL_COLORS } from "./workcellAppearance.js";
+import { loadWorkcellSurfaces, applyWorkcellSurface } from "./workcellSurfaces.js";
 
 export async function createRecordedWorkcell(container, { signal, onTime, onReady }) {
-  const [recording, assets] = await Promise.all([
+  const [recording, assets, surfaces] = await Promise.all([
     loadPackedJson(import.meta.env.BASE_URL+"media/workcell.json.gz",signal),
     loadCameraModels(),
+    loadWorkcellSurfaces(),
   ]);
   signal.throwIfAborted();
   recording.object.geometries.forEach(unpackGeometry);
@@ -14,11 +16,8 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   const model = objectLoader.parse(recording.object);
   const objects = new Map();
   model.traverse((object) => objects.set(object.name, object));
-  for (const [name, color] of [["mesh_0", WORKCELL_COLORS.floor], ["mesh_1", WORKCELL_COLORS.mat]]) {
-    const object = objects.get(name);
-    object.material = object.material.clone();
-    object.material.color.set(color);
-  }
+  applyWorkcellSurface(objects.get("mesh_0"),"floor",surfaces);
+  applyWorkcellSurface(objects.get("mesh_1"),"mat",surfaces);
   const animated = recording.meshes.filter((item) => item.frames.length > 1 || item.geometryFrames.length).map((item) => {
     const object = objects.get(item.name);
     const geometries = item.geometryFrames.map(({index, geometry}) => {
@@ -39,10 +38,6 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   Object.assign(light.shadow.camera, {left: -1.5, right: 1.5, top: 1.5, bottom: -1.5, near: 0.1, far: 10});
   light.shadow.bias = -0.0005;
   scene.add(light);
-  const grid = new THREE.GridHelper(6, 60, WORKCELL_COLORS.gridMajor, WORKCELL_COLORS.gridMinor);
-  grid.rotation.x = Math.PI / 2;
-  grid.position.z = -0.054;
-  scene.add(grid);
   const camera = new THREE.PerspectiveCamera(42, 1, 0.002, 30);
   camera.up.set(0, 0, 1);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -190,8 +185,6 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
       animated.forEach((item) => item.geometries.forEach((frame) => geometries.add(frame.geometry)));
       geometries.forEach((geometry) => geometry.dispose());
       materials.forEach((material) => material.dispose());
-      grid.geometry.dispose();
-      grid.material.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       renderer.domElement.remove();

@@ -27,7 +27,7 @@ export default function CodewordExplorer() {
   return <div className={"codeword-explorer" + (playback.playing ? " is-playing" : "")} ref={playback.host}>
     <div className="mechanism panel-surface">
       <div className="mechanism-plot routing-plot">
-        <div className="chart-top"><h3>The quantizer chooses. The residual remembers.</h3><span className="tag">Computed example</span></div>
+        <div className="chart-top"><h3>The quantizer chooses. The residual remembers.</h3></div>
         <div className="encoding-phases">{phases.map((label,i)=><span key={label} className={phase===i?"current":""}><small>0{i+1}</small>{label}</span>)}</div>
         <svg viewBox="0 0 720 330" role="img" aria-label={`Action ${step}: source ${signed(current.source)}, adjusted input ${signed(current.input)}, decoded codeword ${signed(current.cq)}, residual ${signed(current.residual)}`}>
           <defs><linearGradient id="input-span"><stop stopColor="#d6b479"/><stop offset="1" stopColor="#9d92ff"/></linearGradient></defs>
@@ -42,7 +42,7 @@ export default function CodewordExplorer() {
           <text x={adjusted} y="51" textAnchor="middle" className="cq-text">uₜ = {signed(current.input)}Δ</text>
           <path d={`M${adjusted} 139C${adjusted} 185 ${quantized} 166 ${quantized} 208`} className={"quantization-route"+(phase>=2?" selected":"")}/>
           <circle r="4" cx={particleX} cy={particleY} className="route-particle"/>
-          <text x="40" y="185" className="route-label">DISCRETE CODEWORDS</text>
+          <text x="40" y="185" className="route-label">CODEWORDS</text>
           <line x1="68" x2="636" y1="234" y2="234" className="codeword-rail"/>
           {[-.5,.5].map(value=><g key={value} className={current.cq===value?"chosen-codeword":""}><circle cx={x(value)} cy="234" r="23" className="codeword-node"/><text x={x(value)} y="239" textAnchor="middle">{signed(value)}</text></g>)}
           <text x="637" y="205" textAnchor="end" className="route-label">qₜ = {signed(current.cq)}Δ</text>

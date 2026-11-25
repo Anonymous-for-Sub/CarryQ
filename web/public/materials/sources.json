@@ -1,0 +1,90 @@
+{
+  "publisher": "Poly Haven",
+  "assets": [
+    {
+      "asset": "dark_wood",
+      "channel": "color",
+      "file": "dark_wood_color.webp",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/dark_wood/dark_wood_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "source_sha256": "d68da31655bf47024af893156a6a01a6c95bb60f55d97e2dc9bdd47be320e5b5",
+      "export_sha256": "b3376532f7237eb6ace093274ae54f1ef38f901ebca25576ad847931f327adc5",
+      "size": [
+        768,
+        768
+      ],
+      "bytes": 112028
+    },
+    {
+      "asset": "dark_wood",
+      "channel": "normal",
+      "file": "dark_wood_normal.webp",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/dark_wood/dark_wood_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "source_sha256": "c42541f1bda0a14b39f120c24407eeba699af8ac85b371c7cef98ffd7d7b13bf",
+      "export_sha256": "5e0ff1190f92a0005e13c246c8bb9684167d9cade8bf5229ec18fd44aecb56fe",
+      "size": [
+        512,
+        512
+      ],
+      "bytes": 2458
+    },
+    {
+      "asset": "dark_wood",
+      "channel": "roughness",
+      "file": "dark_wood_roughness.webp",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/dark_wood/dark_wood_rough_1k.jpg",
+      "license": "CC0-1.0",
+      "source_sha256": "47ea12dbf649109b02eaa164dde9732a74e839957f29ad0ec7f5266b575d1835",
+      "export_sha256": "dd94d91fe8a66625fd6eb1166f57cdc2b4f0ca2cfa204b525e923833aae4f615",
+      "size": [
+        512,
+        512
+      ],
+      "bytes": 35632
+    },
+    {
+      "asset": "denim_fabric_06",
+      "channel": "color",
+      "file": "denim_fabric_06_color.webp",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/denim_fabric_06/denim_fabric_06_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "source_sha256": "9da7f6672e71a87135d5b4b6bdf4471ee9d250f88ae78ce51f36cd0a6ed5d78d",
+      "export_sha256": "efce82e1df2d984372fffbeb4d08089a03f85a3907beed714601f5f4bf0b75bd",
+      "size": [
+        768,
+        768
+      ],
+      "bytes": 138088
+    },
+    {
+      "asset": "denim_fabric_06",
+      "channel": "normal",
+      "file": "denim_fabric_06_normal.webp",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/denim_fabric_06/denim_fabric_06_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "source_sha256": "f94bbaa53003762c96624cabebb1a3fd334780c8c96548e9c14990f1e6920df2",
+      "export_sha256": "01df405c3f9ce33db0e5f15007434a981543e3d4e21145c8d2ffe6c080480891",
+      "size": [
+        512,
+        512
+      ],
+      "bytes": 95900
+    },
+    {
+      "asset": "denim_fabric_06",
+      "channel": "roughness",
+      "file": "denim_fabric_06_roughness.webp",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/denim_fabric_06/denim_fabric_06_rough_1k.jpg",
+      "license": "CC0-1.0",
+      "source_sha256": "4309d3acc80fb097652e1b2f5d6bd63f16351e215c3ce55490776ae0bd8380cb",
+      "export_sha256": "ade49b3d163c961061da76890d34d91dcd6333bb2318a8077de9501a9041105c",
+      "size": [
+        512,
+        512
+      ],
+      "bytes": 68916
+    }
+  ],
+  "conversion": "Web delivery: color maps 768 px; normal/roughness maps 512 px; WebP quality 90. No texture content was synthesized."
+}

@@ -119,3 +119,13 @@ generation and recorded playback.
 Check this presentation with `node scripts/check-refinement.mjs URL`; it tests
 autoplay, action horizons, measured point counts, parallel results and mobile
 layout. The before-revision website remains available in Git history.
+
+`workcellSurfaces.js` applies locally served CC0 scans to the workcell in both
+viewers; material sources and conversion hashes are in `public/materials/`.
+The wood and woven surfaces use color, normal and roughness maps. The live
+floor uses the matte material instead of the original mirror render pass.
+No action or collision geometry is changed.
+
+The temporal analysis shows both bit widths and both reset plots directly.
+The motivation view includes a local eight-action view using the same computed
+values as its global curve.

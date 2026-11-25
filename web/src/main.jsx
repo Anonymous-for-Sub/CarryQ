@@ -34,14 +34,14 @@ function Video({
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
-  return <figure className={'video-card ' + (hero ? 'hero-video' : '')}><video ref={ref} controls playsInline muted preload="none" poster={file('media/' + item.poster)} src={file('media/' + item.file)} aria-label={item.title + ' Memoryless versus CarryQ comparison'} /><figcaption><strong>{item.title}</strong><span>Memoryless ← → CarryQ</span></figcaption></figure>;
+  return <figure className={'video-card ' + (hero ? 'hero-video' : '')}><video ref={ref} controls playsInline muted preload="none" poster={file('media/' + item.poster)} src={file('media/' + item.file)} aria-label={item.title + ' Memoryless versus CarryQ comparison'} /><figcaption><strong>{item.title}</strong></figcaption></figure>;
 }
 function SectionHead({
   n,
   title,
   children
 }) {
-  return <div className="section-head"><div className="eyebrow">{n}</div><h2>{title}</h2>{children && <p>{children}</p>}</div>;
+  return <div className="section-head"><h2>{title}</h2>{children && <p>{children}</p>}</div>;
 }
 
 const resultSets = {
@@ -78,10 +78,9 @@ function Results() {
     <SectionHead n="Execution evidence" title="Execution across tokenizers, tasks and policies">A shared interface isolates what temporal encoding changes.</SectionHead>
     <div className="chart-top evaluation-top"><div className="legend"><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div><button className="text-button" onClick={()=>setTable(!table)}>{table?'Chart view':'Table view'}</button></div>
     <div className="evaluation-grid">
-      {Object.entries(resultSets).map(([name,data])=><article className="panel-surface evaluation-card" key={name}>
-        <div className="evaluation-heading"><h3>{name}</h3><span>Task success (%)</span></div>
+      {Object.entries(resultSets).map(([name,data])=><article className={"panel-surface evaluation-card evaluation-"+({Replay:"replay","Additional tasks":"additional","Closed-loop":"closed"}[name])} key={name}>
+        <div className="evaluation-heading"><h3>{name}</h3></div>
         {table ? <div className="table-scroll"><table><thead><tr><th>Setting</th><th>ML</th><th>CarryQ</th><th>Gain</th></tr></thead><tbody>{data.rows.map(([label,a,b,note])=><tr key={label}><td>{label}<small>{note}</small></td><td>{fmt(a)}%</td><td>{fmt(b)}%</td><td>+{fmt(b-a)}</td></tr>)}</tbody></table></div> : name==='Additional tasks' ? <div className="additional-summary">
-          <span className="cohort-label">12 independently selected LIBERO tasks</span>
           <div className="additional-stat"><span>Memoryless</span><strong className="baseline">58.75<small>%</small></strong><small>141 / 240</small></div>
           <div className="additional-stat"><span>CarryQ</span><strong className="ours">92.92<small>%</small></strong><small>223 / 240</small></div>
           <div className="cohort-gain">+34.17 <span>percentage points</span></div>
@@ -102,18 +101,17 @@ function Real() {
       const cq=real.find(row=>row.method==='CarryQ' && +row.bits_per_coordinate===bits);
       return <article className="real-bit-card panel-surface" key={bits} aria-label={`${bits}-bit real robot results`}>
         <div className="real-bit-heading"><h4>{bits}-bit encoding</h4><span>+{+cq.insertion_power_pct-ml.insertion_power_pct} pp</span></div>
-        <p className="real-stage-label">S2 · Insertion & power</p>
-        <div className="real-comparison"><div className="real-stat"><span className="baseline">Memoryless</span><strong>{ml.insertion_power_pct}<small>%</small></strong><span>{ml.insertion_power_successes} / 50 trials</span></div><span className="stat-arrow">→</span><div className="real-stat"><span className="ours">CarryQ</span><strong className="ours">{cq.insertion_power_pct}<small>%</small></strong><span>{cq.insertion_power_successes} / 50 trials</span></div></div>
+
+        <div className="real-comparison"><div className="real-stat"><span className="baseline">Memoryless</span><strong>{ml.insertion_power_pct}<small>%</small></strong></div><span className="stat-arrow">→</span><div className="real-stat"><span className="ours">CarryQ</span><strong className="ours">{cq.insertion_power_pct}<small>%</small></strong></div></div>
         <div className="real-alignment"><span>S1 · Alignment</span><span><b className="baseline">{ml.alignment_pct}%</b><i>→</i><b className="ours">{cq.alignment_pct}%</b></span></div>
       </article>;
     })}</div>
-    <p className="caption">The encoders share joint-target differencing, integration and low-level control. Continuous execution achieves 18% S2 success. Full controls and trial counts are in the supplement.</p>
   </section>;
 }
 
 function Gallery() {
   const [filter, setFilter] = useState('All');
-  return <section className="section wrap" id="gallery"><SectionHead n="Video gallery" title="Recorded task comparisons">Selected Memoryless-failure / CarryQ-success pairs, shown side by side with matched cameras.</SectionHead><div className="tabs">{['All', 'Replay', 'Closed-loop'].map(f => <button key={f} aria-pressed={filter === f} onClick={() => setFilter(f)}>{f}</button>)}</div><div className="video-grid">{videos.filter(v => filter === 'All' || v.group === filter).map(v => <div key={v.file}><Video item={v} /><p className="caption">{v.group === 'Replay' ? 'Matched recorded-source replay.' : v.source_id.startsWith('robotwin') ? 'Separate paired SeedPolicy qualitative recording.' : 'Saved paired closed-loop execution.'} 4-bit encoding · complete export at 20 fps.</p></div>)}</div></section>;
+  return <section className="section wrap" id="gallery"><SectionHead n="Video gallery" title="Recorded task comparisons">Selected Memoryless-failure / CarryQ-success pairs, shown side by side with matched cameras.</SectionHead><div className="tabs">{['All', 'Replay', 'Closed-loop'].map(f => <button key={f} aria-pressed={filter === f} onClick={() => setFilter(f)}>{f}</button>)}</div><div className="video-grid">{videos.filter(v => filter === 'All' || v.group === filter).map(v => <div key={v.file}><Video item={v} /><p className="caption">{v.group === 'Replay' ? 'Matched recorded-source replay.' : v.source_id.startsWith('robotwin') ? 'Separate paired SeedPolicy qualitative recording.' : 'Saved paired closed-loop execution.'} 4-bit encoding.</p></div>)}</div></section>;
 }
 function VideoSelector() {
   const [selected, setSelected] = useState(videos[6]);

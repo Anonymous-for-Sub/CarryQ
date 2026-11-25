@@ -147,3 +147,156 @@ footer .brand.wordmark { font-size: 28px; }
   .motivation-controls select { margin-left: auto; }
   .citation pre { padding: 16px; font-size: 11px; }
 }
+
+/* A quieter hierarchy: normal reading text, fewer labels, visible comparisons. */
+.section-head { margin-bottom: 26px; }
+.section-head p { font-size: 17px; }
+.nav-links a, .button, button { font-size: 14px; }
+.caption, .small { font-size: 14px; }
+.method-concepts p, .integration-panel p { font-size: 16px; }
+.method-concepts h3, .integration-panel h3 { font-size: 18px; }
+.integration-panel small, .integration-flow span { font-size: 14px; }
+.mechanism-heading p { font-size: 16px; }
+.diagram-legend { font-size: 14px; gap: 18px; }
+.diagram-controls button, .diagram-controls label, .diagram-controls output { font-size: 14px; }
+.research-diagram figcaption { font-size: 14px; }
+.motivation-readouts { font-size: 14px; padding-block: 16px; }
+.motivation-readouts b { font-size: 15px; }
+.motivation-controls select { font-size: 14px; }
+.encoding-phases > span, .encoding-phases small { font-size: 13px; }
+.routing-plot svg .route-label { font-size: 14px; }
+.mechanism-inspector label, .trace, .playback output, .mechanism-summary { font-size: 14px; }
+.video-card figcaption strong { font-size: 16px; }
+.video-playlist button { font-size: 14px; }
+.workcell-controls label, .workcell-controls select, .playback-phase { font-size: 14px; }
+.workcell-controls .eyebrow { display: none; }
+.scene-timeline { font-size: 13px; }
+
+.real-photos figcaption { font-size: 18px; margin-top: 12px; }
+.real-photos figcaption span { font-size: 17px; }
+.real-result-head p { font-size: 15px; }
+.real-comparison { padding-top: 25px; }
+.real-comparison .real-stat strong { font-size: 46px; }
+.real-comparison .real-stat > span { font-size: 16px; }
+.real-alignment { font-size: 15px; }
+.real-bit-heading > span { font-size: 15px; }
+
+.evaluation-grid { grid-template-columns: 1fr 1fr; grid-template-areas: 'replay closed' 'additional closed'; gap: 22px; }
+.evaluation-replay { grid-area: replay; }
+.evaluation-additional { grid-area: additional; }
+.evaluation-closed { grid-area: closed; }
+.evaluation-card { padding: 25px; }
+.evaluation-heading { padding-bottom: 17px; margin-bottom: 21px; }
+.evaluation-heading h3 { font-size: 22px; }
+.evaluation-card .bar-label { font-size: 16px; }
+.evaluation-card .bar-label > span { font-size: 14px; }
+.evaluation-card .bar-track { height: 10px; width: calc(100% - 83px); }
+.evaluation-card .bar-track b { font-size: 14px; top: -6px; left: calc(100% + 12px); }
+.evaluation-card .bar-row p { font-size: 14px; }
+.evaluation-note { font-size: 16px; line-height: 1.65; padding-top: 24px; margin-top: auto; }
+.evaluation-closed .bars { flex: 1; align-content: space-between; }
+.evaluation-card table { font-size: 14px; }
+.evaluation-card td small { font-size: 13px; }
+.evaluation-additional .additional-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 26px; }
+.additional-stat { margin-bottom: 0; }
+.additional-stat > span { font-size: 16px; margin-bottom: 7px; }
+.additional-stat strong { font-size: 28px; }
+.additional-stat strong small { font-size: 17px; }
+.additional-stat > small { font-size: 14px; padding-bottom: 3px; }
+.cohort-gain { grid-column: 1/-1; font-size: 22px; padding-top: 13px; }
+.cohort-gain span { font-size: 14px; display: inline; margin-left: 8px; }
+.bar-row p, .bar-track b { font-size: 14px; }
+.insertion-result .small { font-size: 14px; }
+
+.analysis-grid { grid-template-columns: 1fr; gap: 24px; }
+.analysis-grid .technical-figure { padding: 26px; }
+.analysis-grid .figure-heading h3 { font-size: 22px; }
+.ledger-equation { font: 18px Georgia,serif; color: var(--accent); white-space: nowrap; }
+.ledger-key { font-size: 14px; margin: 0 0 5px; gap: 24px; }
+.ledger-bit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.ledger-bit { padding-top: 20px; }
+.ledger-bit + .ledger-bit { padding-left: 30px; border-left: 1px solid var(--line); }
+.ledger-bit-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 26px; }
+.ledger-bit-heading h4 { font-size: 20px; }
+.ledger-bit-heading > span { color: var(--accent); font-size: 14px; }
+.ledger-label { font-size: 16px; }
+.ledger-label span { font-size: 15px; }
+.ledger-track { height: 17px; margin: 10px 2px 7px 0; }
+.ledger-track .t { height: 25px; }
+.ledger-effect { font-size: 14px; color: var(--muted); }
+.ledger-row { margin-bottom: 23px; }
+.ledger figcaption { font-size: 14px; margin-top: 7px; }
+.reset-reduction { font: 16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+.reset-legend { font-size: 14px; gap: 23px; margin: 0 0 22px; }
+.reset-chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.reset-chart + .reset-chart { padding-left: 30px; border-left: 1px solid var(--line); }
+.reset-chart-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.reset-chart-heading h4 { font-size: 19px; }
+.reset-chart-heading > span { font-size: 14px; color: var(--muted); }
+.reset-chart > svg { display: block; width: 100%; }
+.reset-response svg text, .reset-response svg .axis-label { font-size: 18px; }
+.reset-readouts span { font-size: 14px; }
+.reset-readouts b { font-size: 18px; }
+.reset-response figcaption { font-size: 14px; margin-top: 23px; }
+
+.cumulative-gap { fill: #939eaf25; }
+.gap-bracket { stroke: #bdc5d3; stroke-width: 1.5; stroke-dasharray: 4 4; }
+.research-diagram svg .gap-label { fill: #e1e5f0; font-size: 14px; paint-order: stroke; stroke: #10151f; stroke-width: 4px; stroke-linejoin: round; }
+.motivation-diagram .diagram-curve.cq-stroke { stroke-width: 3.8; }
+.motivation-window { display: grid; grid-template-columns: 240px minmax(0,1fr); gap: 22px; padding: 23px 24px 16px; border-top: 1px solid var(--line); align-items: center; }
+.motivation-window h4 { font-size: 18px; }
+.motivation-window p { font-size: 16px; margin: 12px 0; }
+.motivation-window > div > span { color: var(--accent); font-size: 15px; }
+.window-plot { min-width: 0; overflow-x: auto; scrollbar-color: #555a77 #0d111b; }
+.window-plot svg { display: block; width: 100%; min-width: 600px; }
+.window-plot svg text { fill: #aeb9cc; font-size: 15px; }
+.window-plot .source-stroke { stroke-dasharray: 6 4; }
+
+@media(max-width:1000px) {
+  .evaluation-grid { grid-template-columns: 1fr; grid-template-areas: 'replay' 'additional' 'closed'; }
+  .ledger-bit-grid, .reset-chart-grid { grid-template-columns: 1fr; gap: 20px; }
+  .ledger-bit + .ledger-bit, .reset-chart + .reset-chart { padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  .motivation-window { grid-template-columns: 1fr; }
+}
+@media(max-width:600px) {
+  .section-head p { font-size: 16px; }
+  .analysis-grid .technical-figure { padding: 19px 16px; }
+  .analysis-grid .figure-heading { flex-wrap: wrap; gap: 12px; }
+  .analysis-grid .figure-heading h3 { font-size: 20px; }
+  .ledger-bit-heading { align-items: flex-start; flex-wrap: wrap; }
+  .ledger-key { gap: 10px 18px; }
+  .ledger-label span { font-size: 13px; }
+  .reset-response svg text, .reset-response svg .axis-label { font-size: 22px; }
+  .reset-readouts span { font-size: 12px; }
+  .reset-readouts b { font-size: 16px; }
+  .reset-legend { font-size: 13px; gap: 15px; }
+  .evaluation-card { padding: 21px; }
+  .evaluation-card .bar-label { font-size: 15px; }
+  .evaluation-note { font-size: 15px; }
+  .evaluation-additional .additional-summary { gap: 18px; }
+  .additional-stat { grid-template-columns: 1fr; }
+  .additional-stat > small { padding-top: 5px; }
+  .additional-stat > span { font-size: 14px; }
+  .real-comparison .real-stat strong { font-size: 42px; }
+  .real-photos figcaption { font-size: 16px; }
+  .real-photos figcaption span { font-size: 15px; margin-right: 6px; }
+  .real-alignment { font-size: 14px; }
+  .diagram-legend { font-size: 13px; }
+  .diagram-controls { gap: 12px; }
+  .diagram-controls label, .diagram-controls output, .diagram-controls button { font-size: 13px; }
+  .motivation-window { padding: 20px 16px; }
+  .motivation-readouts { font-size: 13px; }
+  .encoding-phases > span { font-size: 12px; }
+  .workcell-controls label, .workcell-controls select, .playback-phase { font-size: 13px; }
+}
+.figure-options button, .diagram-tools > button { font-size: 14px; }
+.eyebrow { font-size: 13px; letter-spacing: .05em; }
+.tape-labels, .tape-step { font-size: 13px; }
+.sensor-feed-labels button { font-size: 12px; }
+.citation pre { font-size: 14px; }
+footer { font-size: 14px; }
+@media(max-width:600px) {
+  .workcell-heading .figure-options button { font-size: 12px; }
+  .sensor-feed-labels button { font-size: 10px; }
+  .citation pre { font-size: 13px; }
+}

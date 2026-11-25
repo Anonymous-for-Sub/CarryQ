@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMujoco, findBodyByName } from "mujoco-react";
+import { useMujoco, findBodyByName, findGeomByName } from "mujoco-react";
 import * as THREE from "three";
 import { CAMERA_SPECS, createCameraRig, loadCameraModels, renderCameraViews } from "./cameraRig.js";
+import { loadWorkcellSurfaces, applyWorkcellSurface } from "./workcellSurfaces.js";
 export { CAMERA_SPECS } from "./cameraRig.js";
 
 export function TaskCameras({view}) {
@@ -10,11 +11,13 @@ export function TaskCameras({view}) {
   const {gl,scene,camera:main,size}=useThree();
   const [rig,setRig]=useState(null);
   const handIds=useRef({});
+  const surfaces=useRef(null), surfaceIds=useRef({}), surfacesApplied=useRef(false);
   useEffect(()=>{
     let disposed=false;
     loadCameraModels().then(assets=>{
       if(!disposed)setRig(createCameraRig(assets));
     });
+    loadWorkcellSurfaces().then(assets=>{if(!disposed)surfaces.current=assets;});
     return ()=>{disposed=true;};
   },[]);
   useEffect(()=>{
@@ -25,6 +28,7 @@ export function TaskCameras({view}) {
   useEffect(()=>{
     if(sim.status!=="ready")return;
     handIds.current=Object.fromEntries(["usb_hand","charger_hand"].map(name=>[name,findBodyByName(sim.mjModelRef.current,name)]));
+    surfaceIds.current=Object.fromEntries(["floor","table"].map(name=>[name,findGeomByName(sim.mjModelRef.current,name)]));
   },[sim.status]);
 
   const handPoses=()=>{
@@ -74,6 +78,15 @@ export function TaskCameras({view}) {
   },[sim.status,rig]);
 
   useFrame(()=>{
+    if (surfaces.current && !surfacesApplied.current && sim.status==="ready") {
+      let count=0;
+      scene.traverse(mesh=>{
+        if(!mesh.isMesh || mesh.userData.geomID===undefined)return;
+        if(mesh.userData.geomID===surfaceIds.current.floor){applyWorkcellSurface(mesh,"floor",surfaces.current);count++;}
+        if(mesh.userData.geomID===surfaceIds.current.table){applyWorkcellSurface(mesh,"mat",surfaces.current);count++;}
+      });
+      surfacesApplied.current=count===2;
+    }
     if(!rig){gl.render(scene,main);return;}
     rig.update(handPoses());
     const selected=rig.sensors[view]?.camera;

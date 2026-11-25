@@ -1,1 +1,0 @@
-const o={background:"#242a36",floor:"#3a3c43",mat:"#294c72",gridMajor:"#596172",gridMinor:"#424853"},r=Object.freeze(Object.defineProperty({__proto__:null},Symbol.toStringTag,{value:"Module"}));export{o as W,r as _};

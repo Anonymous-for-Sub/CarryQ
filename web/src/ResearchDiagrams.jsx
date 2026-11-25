@@ -49,6 +49,15 @@ export function MotivationDiagram() {
     ...(fraction ? [[x(playback.progress), y(value(key))]] : [])].map(point => point.join(",")).join(" ");
   const ticks = [0, length / 4, length / 2, length * .75, length];
   const cursor = x(playback.progress);
+  const gap = [[x(0),y(0)],...rows.slice(0,completed).map(row=>[x(row.step),y(row.mlSum)]),...(fraction?[[cursor,y(value('mlSum'))]]:[]),[cursor,y(value('requested'))],...rows.slice(0,completed).reverse().map(row=>[x(row.step),y(row.requested)])].map(point=>point.join(',')).join(' ');
+  const windowStart = Math.min(length-8,Math.floor(Math.max(0,playback.progress-.00001)/8)*8);
+  const localProgress = playback.progress-windowStart;
+  const localCompleted = Math.floor(localProgress),localFraction = localProgress-localCompleted;
+  const base = windowStart ? rows[windowStart-1] : {requested:0,cqSum:0};
+  const windowRows = rows.slice(windowStart,windowStart+8);
+  const zx = t=>60+t/8*690, zy = value=>179-value/1.6*143;
+  const localValue = key=>value(key)-base[key];
+  const localLine = key=>[[zx(0),zy(0)],...windowRows.slice(0,localCompleted).map((row,index)=>[zx(index+1),zy(row[key]-base[key])]),...(localFraction?[[zx(localProgress),zy(localValue(key))]]:[])].map(point=>point.join(',')).join(' ');
   return <figure className={"research-diagram motivation-diagram"+(playback.playing?" is-playing":"")} ref={playback.host}>
     <div className="diagram-topline"><h3>One small command, repeated over time</h3><div className="diagram-legend"><span className="source-key">Requested</span><span className="ml-key">Memoryless</span><span className="cq-key">CarryQ</span></div></div>
     <div className="diagram-scroll">
@@ -80,11 +89,25 @@ export function MotivationDiagram() {
         {ticks.map(t => <text key={t} className="axis-label" x={x(t)} y="301" textAnchor="middle">{t}</text>)}
         <text className="diagram-note" x="1023" y="326" textAnchor="end">Executed actions · 8-action reset windows</text>
         <line x1={cursor} x2={cursor} y1="78" y2="277" className="action-cursor"/>
+        <polygon points={gap} className="cumulative-gap"/>
         <polyline className="diagram-curve source-stroke" points={line("requested")}/>
         <polyline className="diagram-curve ml-stroke" points={line("mlSum")}/>
         <polyline className="diagram-curve cq-stroke" points={line("cqSum")}/>
         {[["requested","source-dot"],["mlSum","ml-dot"],["cqSum","cq-dot"]].map(([key,color])=><circle key={key} className={color} cx={cursor} cy={y(value(key))} r="5"/>)}
+        {completed>=4 && <g><line className="gap-bracket" x1={cursor} x2={cursor} y1={y(value('mlSum'))} y2={y(value('requested'))}/><text className="gap-label" x={cursor>970?cursor-10:cursor+10} textAnchor={cursor>970?'end':'start'} y={(y(value('mlSum'))+y(value('requested')))/2}>+{(value('mlSum')-value('requested')).toFixed(2)}Δ</text></g>}
       </svg>
+    </div>
+    <div className="motivation-window">
+      <div><h4>Inside one reset window</h4><p>CarryQ alternates its codewords so that successive errors compensate.</p><span>Actions {windowStart+1}–{windowStart+8}</span></div>
+      <div className="window-plot"><svg viewBox="0 0 800 230" role="img" aria-label="Magnified CarryQ and requested cumulative commands within the current eight-action window">
+        {[0,.5,1,1.5].map(t=><g key={t}><line className="chart-grid" x1="60" x2="750" y1={zy(t)} y2={zy(t)}/><text x="47" y={zy(t)+5} textAnchor="end">{t}Δ</text></g>)}
+        {[0,2,4,6,8].map(t=><text key={t} x={zx(t)} y="205" textAnchor="middle">{t}</text>)}
+        <text x="750" y="226" textAnchor="end">Action within window</text>
+        <polyline className="diagram-curve source-stroke" points={localLine('requested')}/>
+        <polyline className="diagram-curve cq-stroke" points={localLine('cqSum')}/>
+        <circle className="source-dot" cx={zx(localProgress)} cy={zy(localValue('requested'))} r="5"/>
+        <circle className="cq-dot" cx={zx(localProgress)} cy={zy(localValue('cqSum'))} r="5"/>
+      </svg></div>
     </div>
     <div className="motivation-readouts">
       <span>Requested sum <b className="source-text">{value("requested").toFixed(2)}Δ</b></span>
@@ -98,7 +121,7 @@ export function MotivationDiagram() {
       <output>{completed} / {length}</output>
       <select aria-label="Animation action count" value={length} onChange={event=>setLength(+event.target.value)}>{[16,32,64].map(n=><option key={n} value={n}>{n} actions</option>)}</select>
     </div>
-    <figcaption>Computed scalar example. The display interpolates between discrete action sums; CarryQ resets at every eight-action window.</figcaption>
+    <figcaption>Scalar example on a fixed grid, with an eight-action residual reset.</figcaption>
   </figure>;
 }
 

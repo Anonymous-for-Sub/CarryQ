@@ -92,7 +92,6 @@ function RecordedScene() {
         }}>Reset</button>
         </div>
         <span className="playback-phase" role="status">{phase}</span>
-        <p className="scene-description">Recorded MuJoCo poses with interpolation. The browser renders the scene as you move the camera.</p>
       </aside>
       <div className="scene-timeline">
         <label htmlFor="scene-time">Playback</label>
