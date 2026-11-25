@@ -95,6 +95,7 @@ export function TaskCameras({ view }) {
     if (!new URLSearchParams(location.search).has('capture')) return;
     window.__taskCapture = {
       specs: CAMERA_SPECS,
+      scene,
       pause: () => sim.api.setPaused(true),
       restore: snapshot => sim.api.restoreState(snapshot),
       render: (key, width = 1600, height = 1200) => {

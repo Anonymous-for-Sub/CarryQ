@@ -22,10 +22,26 @@ RoboTwin recording is a separate paired SeedPolicy qualitative example.
 `media/manifest.json` records video identities, hashes, durations and encoding
 quality. The three real-robot photographs show approach, alignment and insertion.
 
-## Embedded live workcell
+## First-screen workcell
 
-Choose **Launch live workcell** in the Live demo section. It loads in that
-section without navigation to another page. One MuJoCo workcell contains two Franka Panda arms and two insertion tasks:
+The page initially loads a Three.js playback of saved MuJoCo poses.
+The same Panda geometry, fixtures and materials are retained. Fourteen saved
+states plus the initial pose cover USB-C and charger insertion. Positions and
+quaternions are interpolated between those states. The browser supports orbit,
+zoom, seek, task selection, and three camera views. It pauses rendering outside
+the viewport and while the tab is hidden.
+
+The packed scene is about 5.25 MB. The physics bundle and original OBJ assets
+load when **Live physics** is selected. Both modes appear in the first-screen
+workcell. The original interactive MuJoCo mode retains its controls and views.
+
+The Method overview is exported directly from the paper's architecture PDF
+as SVG paths with outlined glyphs. Full diagram preserves the original artwork.
+Detail controls add separate highlight overlays and explanations.
+
+## Live physics controls
+
+Choose **Live physics** above the first-screen workcell. One MuJoCo workcell contains two Franka Panda arms and two insertion tasks:
 
 1. Insert a USB-C plug into a fixed USB-C receptacle.
 2. Insert the two AC blades of a compact white charger into a power strip.

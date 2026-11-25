@@ -10,6 +10,7 @@ try{
  await page.emulateMedia({reducedMotion:'reduce'});
  assert.equal(await page.locator('iframe').count(),0);
  assert.ok(!requests.some(u=>u.includes('/InsertionDemo-')),'demo should load only on request');
+ await page.waitForFunction(()=>document.querySelector('#playback-view')?.disabled===false);
  await page.screenshot({path:folder+'/desktop-hero.png'});
  await page.locator('#method').scrollIntoViewIfNeeded();await page.screenshot({path:folder+'/desktop-method.png'});
  await page.locator('#reset').selectOption('1');const summary=await page.locator('.mechanism-summary').innerText();const values=[...summary.matchAll(/(\d+\.\d+) Δ/g)].map(m=>m[1]);assert.equal(values[0],values[1]);await page.locator('#reset').selectOption('8');

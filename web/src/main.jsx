@@ -1,82 +1,222 @@
-import React,{useState,useEffect,useRef,lazy,Suspense} from 'react';
-import {createRoot} from 'react-dom/client';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { createRoot } from 'react-dom/client';
 import videos from './videos.json';
 import insertion from './insertion.json';
 import real from './real.json';
-import {encodeExample} from './encoding.mjs';
+import { encodeExample } from './encoding.mjs';
 import './style.css';
 import { Architecture, PaperFigure, TemporalEvidence, TokenTape } from './MethodFigures.jsx';
-const InsertionDemo=lazy(()=>import('./InsertionDemo.jsx'));
-const BASE=import.meta.env.BASE_URL;
-const file=(p)=>BASE+p;
-const codeLink=import.meta.env.VITE_SUPPLEMENTARY==='true'?'../code/README.md':'https://github.com/Anonymous-for-Sub/CarryQ';
-const supplement=import.meta.env.VITE_SUPPLEMENTARY==='true'?'../appendix.pdf':file('appendix.pdf');
-const fmt=(n)=>Number(n).toFixed(2);
-const links=[['method','Method'],['real','Real robot'],['results','Results'],['analysis','Analysis'],['demo','Live demo'],['gallery','Videos']];
-function Mark(){return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 22V9h7v13h7V9h8"/><circle cx="5" cy="22" r="2"/><circle cx="27" cy="9" r="2"/></svg>}
-function Video({item,hero=false}){const ref=useRef();useEffect(()=>{const node=ref.current;const observer=new IntersectionObserver(([entry])=>{if(!entry.isIntersecting)node.pause();},{threshold:.15});observer.observe(node);return()=>observer.disconnect();},[]);return <figure className={'video-card '+(hero?'hero-video':'')}><video ref={ref} controls playsInline muted preload="none" poster={file('media/'+item.poster)} src={file('media/'+item.file)} aria-label={item.title+' Memoryless versus CarryQ comparison'}/><figcaption><strong>{item.title}</strong><span>Memoryless ← → CarryQ</span></figcaption></figure>}
-function SectionHead({n,title,children}){return <div className="section-head"><div className="eyebrow">{n}</div><h2>{title}</h2>{children&&<p>{children}</p>}</div>}
-function Mechanism(){const [increment,setIncrement]=useState(.18),[reset,setReset]=useState(8),[step,setStep]=useState(8),[playing,setPlaying]=useState(false);const rows=encodeExample({increment,reset});const current=rows[step-1];useEffect(()=>{if(!playing)return;const timer=setInterval(()=>setStep(s=>{if(s>=16){setPlaying(false);return s;}return s+1}),500);return()=>clearInterval(timer)},[playing]);const sx=t=>54+t*35,sy=y=>245-y*24;const points=key=>[[sx(0),sy(0)],...rows.slice(0,step).map(r=>[sx(r.step),sy(r[key])])].map(p=>p.join(',')).join(' ');return <><div className="mechanism panel-surface"><div className="mechanism-plot"><div className="chart-top"><h3>One grid. Different error histories.</h3><span className="tag">Computed example</span></div><div className="legend"><span className="requested">Requested sum</span><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div><svg viewBox="0 0 670 310" role="img" aria-label="Cumulative requested and decoded commands across sixteen action steps"><text x="54" y="20" className="axis-label">Cumulative command / grid spacing</text>{[0,2,4,6,8].map(y=><g key={y}><line x1="54" x2="614" y1={sy(y)} y2={sy(y)} className="grid-line"/><text x="34" y={sy(y)+4}>{y}</text></g>)}{[0,4,8,12,16].map(t=><text key={t} x={sx(t)} y="274" textAnchor="middle">{t}</text>)}<text x="614" y="298" textAnchor="end">Action step</text>{Array.from({length:Math.floor(15/reset)},(_,i)=>(i+1)*reset).map(t=><line key={t} x1={sx(t)} x2={sx(t)} y1="30" y2="245" className="reset-line"/>)}<polyline points={points('requested')} className="requested-path"/><polyline points={points('mlSum')} className="baseline-path"/><polyline points={points('cqSum')} className="ours-path"/>{['requested','mlSum','cqSum'].map((key,i)=><circle key={key} cx={sx(step)} cy={sy(current[key])} r="5" fill={['#e5c683','#8c96a9','#8080ff'][i]}/>)}</svg><div className="playback"><button onClick={()=>{if(step===16)setStep(1);setPlaying(p=>!p)}}>{playing?'Pause':'Play steps'}</button><label className="sr-only" htmlFor="step">Action step</label><input id="step" type="range" min="1" max="16" value={step} onChange={e=>{setPlaying(false);setStep(+e.target.value)}}/><output>Step {step}/16</output></div></div><div className="mechanism-inspector"><div className="eyebrow">Follow the residual</div><h3>Earlier error guides the next token.</h3><label htmlFor="increment">Requested increment <output>{increment.toFixed(2)} Δ</output></label><input id="increment" type="range" min=".06" max=".44" step=".02" value={increment} onChange={e=>setIncrement(+e.target.value)}/><label htmlFor="reset">Reset every</label><select id="reset" value={reset} onChange={e=>setReset(+e.target.value)}>{[1,2,4,8,16].map(n=><option key={n} value={n}>{n} action{n>1?'s':''}</option>)}</select><div className="trace"><div><span>Requested aₜ</span><b>{fmt(current.source)}</b></div><div><span>Previous residual rₜ</span><b>{fmt(current.previous)}</b></div><div><span>Adjusted input aₜ + rₜ</span><b>{fmt(current.input)}</b></div><div className="trace-token"><span>Selected codeword qₜ</span><b>{fmt(current.cq)}</b></div><div><span>Next residual rₜ₊₁</span><b>{fmt(current.residual)}</b></div></div><p className="small">A symmetric midpoint grid without a zero codeword. Values are in grid units; dashed lines mark resets.</p></div><div className="mechanism-summary"><span>At step {step}, cumulative error magnitude</span><strong className="baseline">Memoryless {fmt(Math.abs(current.mlSum-current.requested))} Δ</strong><strong className="ours">CarryQ {fmt(Math.abs(current.cqSum-current.requested))} Δ</strong></div></div>
-<TokenTape rows={rows} step={step} reset={reset} seek={(next) => {
-  setPlaying(false);
-  setStep(next);
-}} />
+import Workcell from './Workcell.jsx';
+const BASE = import.meta.env.BASE_URL;
+const file = p => BASE + p;
+const codeLink = import.meta.env.VITE_SUPPLEMENTARY === 'true' ? '../code/README.md' : 'https://github.com/Anonymous-for-Sub/CarryQ';
+const supplement = import.meta.env.VITE_SUPPLEMENTARY === 'true' ? '../appendix.pdf' : file('appendix.pdf');
+const fmt = n => Number(n).toFixed(2);
+const links = [['demo', 'Demo'], ['method', 'Method'], ['real', 'Real robot'], ['results', 'Results'], ['analysis', 'Analysis'], ['gallery', 'Videos']];
+function Mark() {
+  return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 22V9h7v13h7V9h8" /><circle cx="5" cy="22" r="2" /><circle cx="27" cy="9" r="2" /></svg>;
+}
+function Video({
+  item,
+  hero = false
+}) {
+  const ref = useRef();
+  useEffect(() => {
+    const node = ref.current;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) node.pause();
+    }, {
+      threshold: .15
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return <figure className={'video-card ' + (hero ? 'hero-video' : '')}><video ref={ref} controls playsInline muted preload="none" poster={file('media/' + item.poster)} src={file('media/' + item.file)} aria-label={item.title + ' Memoryless versus CarryQ comparison'} /><figcaption><strong>{item.title}</strong><span>Memoryless ← → CarryQ</span></figcaption></figure>;
+}
+function SectionHead({
+  n,
+  title,
+  children
+}) {
+  return <div className="section-head"><div className="eyebrow">{n}</div><h2>{title}</h2>{children && <p>{children}</p>}</div>;
+}
+function Mechanism() {
+  const [increment, setIncrement] = useState(.18),
+    [reset, setReset] = useState(8),
+    [step, setStep] = useState(8),
+    [playing, setPlaying] = useState(false);
+  const rows = encodeExample({
+    increment,
+    reset
+  });
+  const current = rows[step - 1];
+  useEffect(() => {
+    if (!playing) return;
+    const timer = setInterval(() => setStep(s => {
+      if (s >= 16) {
+        setPlaying(false);
+        return s;
+      }
+      return s + 1;
+    }), 500);
+    return () => clearInterval(timer);
+  }, [playing]);
+  const sx = t => 54 + t * 35,
+    sy = y => 245 - y * 24;
+  const points = key => [[sx(0), sy(0)], ...rows.slice(0, step).map(r => [sx(r.step), sy(r[key])])].map(p => p.join(',')).join(' ');
+  return <><div className="mechanism panel-surface"><div className="mechanism-plot"><div className="chart-top"><h3>One grid. Different error histories.</h3><span className="tag">Computed example</span></div><div className="legend"><span className="requested">Requested sum</span><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div><svg viewBox="0 0 670 310" role="img" aria-label="Cumulative requested and decoded commands across sixteen action steps"><text x="54" y="20" className="axis-label">Cumulative command / grid spacing</text>{[0, 2, 4, 6, 8].map(y => <g key={y}><line x1="54" x2="614" y1={sy(y)} y2={sy(y)} className="grid-line" /><text x="34" y={sy(y) + 4}>{y}</text></g>)}{[0, 4, 8, 12, 16].map(t => <text key={t} x={sx(t)} y="274" textAnchor="middle">{t}</text>)}<text x="614" y="298" textAnchor="end">Action step</text>{Array.from({
+            length: Math.floor(15 / reset)
+          }, (_, i) => (i + 1) * reset).map(t => <line key={t} x1={sx(t)} x2={sx(t)} y1="30" y2="245" className="reset-line" />)}<polyline points={points('requested')} className="requested-path" /><polyline points={points('mlSum')} className="baseline-path" /><polyline points={points('cqSum')} className="ours-path" />{['requested', 'mlSum', 'cqSum'].map((key, i) => <circle key={key} cx={sx(step)} cy={sy(current[key])} r="5" fill={['#e5c683', '#8c96a9', '#8080ff'][i]} />)}</svg><div className="playback"><button onClick={() => {
+            if (step === 16) setStep(1);
+            setPlaying(p => !p);
+          }}>{playing ? 'Pause' : 'Play steps'}</button><label className="sr-only" htmlFor="step">Action step</label><input id="step" type="range" min="1" max="16" value={step} onChange={e => {
+            setPlaying(false);
+            setStep(+e.target.value);
+          }} /><output>Step {step}/16</output></div></div><div className="mechanism-inspector"><div className="eyebrow">Follow the residual</div><h3>Earlier error guides the next token.</h3><label htmlFor="increment">Requested increment <output>{increment.toFixed(2)} Δ</output></label><input id="increment" type="range" min=".06" max=".44" step=".02" value={increment} onChange={e => setIncrement(+e.target.value)} /><label htmlFor="reset">Reset every</label><select id="reset" value={reset} onChange={e => setReset(+e.target.value)}>{[1, 2, 4, 8, 16].map(n => <option key={n} value={n}>{n} action{n > 1 ? 's' : ''}</option>)}</select><div className="trace"><div><span>Requested aₜ</span><b>{fmt(current.source)}</b></div><div><span>Previous residual rₜ</span><b>{fmt(current.previous)}</b></div><div><span>Adjusted input aₜ + rₜ</span><b>{fmt(current.input)}</b></div><div className="trace-token"><span>Selected codeword qₜ</span><b>{fmt(current.cq)}</b></div><div><span>Next residual rₜ₊₁</span><b>{fmt(current.residual)}</b></div></div><p className="small">A symmetric midpoint grid without a zero codeword. Values are in grid units; dashed lines mark resets.</p></div><div className="mechanism-summary"><span>At step {step}, cumulative error magnitude</span><strong className="baseline">Memoryless {fmt(Math.abs(current.mlSum - current.requested))} Δ</strong><strong className="ours">CarryQ {fmt(Math.abs(current.cqSum - current.requested))} Δ</strong></div></div>
+<TokenTape rows={rows} step={step} reset={reset} seek={next => {
+      setPlaying(false);
+      setStep(next);
+    }} />
 </>;
 }
-const resultSets={
-Replay:{note:'Fixed-source replay on six sensitivity-selected LIBERO tasks, conditioned on successful continuous references. Each pair shares source commands, codewords, decoder and budget.',rows:[['Scalar',66.08,96.04,'Gain 95% CI [27.27, 32.68] pp'],['Vector codebook',70.13,78.97,'Gain 95% CI [5.07, 12.59] pp'],['Native Praxis',64.34,95.01,'Gain 95% CI [28.46, 32.84] pp']]},
-'Additional tasks':{note:'Twelve independently selected LIBERO tasks. Unconditional task-balanced success over 120 demonstrations at 4 and 6 bits.',rows:[['12-task extension',58.75,92.92,'141 → 223 successes / 240 conditions']]},
-'Closed-loop':{note:'Frozen policies, paired initial states and per-arm replanning. Each row retains its own action interface and evaluation protocol.',rows:[['OpenVLA-OFT · Spatial',98.75,100,'80 initial states; gain CI [0.00, 3.75] pp'],['OpenVLA-OFT · Pro',95,97.5,'80 initial states; gain CI [−2.50, 7.50] pp'],['OpenVLA-OFT · Plus',78.75,83.75,'80 initial states; gain CI [−3.75, 13.75] pp'],['SeedPolicy · RoboTwin',20.83,33.33,'25 → 40 / 120; six settings'],['robomimic · Can',52.25,57.75,'209 → 231 / 400; confirmation cohort']]}}
-function Bars({rows}){return <div className="bars">{rows.map(([label,ml,cq,detail])=><div className="bar-row" key={label}><div className="bar-label"><strong>{label}</strong><span>+{fmt(cq-ml)} pp</span></div><div className="bar-track" title={`Memoryless ${fmt(ml)}%`}><span className="bar ml" style={{width:ml+'%'}}/><b>{fmt(ml)}%</b></div><div className="bar-track" title={`CarryQ ${fmt(cq)}%`}><span className="bar cq" style={{width:cq+'%'}}/><b>{fmt(cq)}%</b></div><p>{detail}</p></div>)}</div>}
-function Results(){const [tab,setTab]=useState('Replay'),[table,setTable]=useState(false),[bits,setBits]=useState(8);const data=resultSets[tab];const fine=['USB-C','Charger'].map(task=>{const get=m=>insertion.find(r=>+r.bits===bits&&r.task===task&&r.method===m);return [task,+get('Memoryless').s2_pct,+get('CarryQ').s2_pct,`${get('Memoryless').s2_successes} → ${get('CarryQ').s2_successes} / 120 episodes`]});return <><section id="results" className="wrap section"><SectionHead n="03 · Execution evidence" title="Across tokenizers, tasks and policies.">A shared interface isolates what temporal encoding changes.</SectionHead><div className="tabs" role="tablist" aria-label="Evaluation setting">{Object.keys(resultSets).map(k=><button role="tab" aria-selected={tab===k} key={k} onClick={()=>setTab(k)}>{k}</button>)}</div><div className="panel-surface result-panel"><div className="chart-top"><h3>Task success (%)</h3><button className="text-button" onClick={()=>setTable(!table)}>{table?'Chart view':'Table view'}</button></div><div className="legend"><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div>{table?<div className="table-scroll"><table><thead><tr><th>Setting</th><th>Memoryless</th><th>CarryQ</th><th>Gain</th></tr></thead><tbody>{data.rows.map(([name,a,b,note])=><tr key={name}><td>{name}<small>{note}</small></td><td>{fmt(a)}%</td><td>{fmt(b)}%</td><td>+{fmt(b-a)} pp</td></tr>)}</tbody></table></div>:<Bars rows={data.rows}/>}<p className="caption">{data.note}</p></div><div className="insertion-result"><div><div className="eyebrow">Fine insertion · OpenVLA-OFT</div><h3>Temporal feedback at finer precision.</h3><p>USB-C and two-blade charger insertion with Franka Panda in MuJoCo. Each method uses 120 episodes per task and bit width.</p><div className="tabs" aria-label="Insertion bit width">{[8,6,4].map(b=><button key={b} aria-pressed={bits===b} onClick={()=>setBits(b)}>{b} bits</button>)}</div><p className="small">H = 8 · K = 4 · 10 Hz<br/>S2: completed insertion</p></div><div className="panel-surface"><Bars rows={fine}/></div></div></section></>}
-function Real(){const [bits,setBits]=useState(6),[stage,setStage]=useState('insertion_power_pct');const ml=real.find(r=>r.method==='Memoryless'&&+r.bits_per_coordinate===bits),cq=real.find(r=>r.method==='CarryQ'&&+r.bits_per_coordinate===bits);return <section className="section wrap" id="real"><SectionHead n="02 · Real robot" title="From alignment to a completed connection.">Charging connector insertion on PiPER with π₀.₅. The goal is complete insertion into a power strip, verified by electrical connection.</SectionHead><div className="real-photos">{[1,2,3].map((i)=><figure key={i}><img loading="lazy" src={file(`media/real-${i}.jpg`)} alt={['Real PiPER arm approaching the power strip','Charging connector aligned with the socket','Charging connector successfully inserted'][i-1]}/><figcaption><span>0{i}</span>{['Approach','Align','Insert'][i-1]}</figcaption></figure>)}</div><div className="real-result panel-surface"><div><h3>One policy. A different encoding rule.</h3><p>50 trials per configuration · 10 Hz · K = 4</p><div className="tabs">{[4,6].map(b=><button key={b} aria-pressed={bits===b} onClick={()=>setBits(b)}>{b} bits</button>)}</div><label className="sr-only" htmlFor="real-stage">Outcome stage</label><select id="real-stage" value={stage} onChange={e=>setStage(e.target.value)}><option value="insertion_power_pct">S2 · Insertion & power</option><option value="alignment_pct">S1 · Alignment</option></select></div><div className="real-stat"><span className="baseline">Memoryless</span><strong>{ml[stage]}<small>%</small></strong></div><span className="stat-arrow">→</span><div className="real-stat"><span className="ours">CarryQ</span><strong>{cq[stage]}<small>%</small></strong></div></div><p className="caption">The encoders share joint-target differencing, integration and low-level control. Continuous execution achieves 18% S2 success. Full controls and trial counts are in the supplement.</p></section>}
-function Demo(){const [loaded,setLoaded]=useState(false);return <section className="section wrap" id="demo"><SectionHead n="04 · Interactive workcell" title="Explore precision insertion.">Rotate the workcell, switch between global and wrist cameras, and follow each connector into its socket.</SectionHead><div className={'demo-stage '+(loaded?'is-loaded':'')}>{loaded?<Suspense fallback={<div className="demo-loading">Loading interactive workcell…</div>}><InsertionDemo/></Suspense>:<div className="demo-cover"><div className="demo-cover-art"><span>USB-C</span><Mark/><span>Charger</span></div><h3>Two arms. Two insertion tasks.</h3><p>Franka Panda · MuJoCo · Interactive 3D</p><button className="primary" onClick={()=>setLoaded(true)}>Launch live workcell <span>↗</span></button></div>}</div><p className="caption">Interactive task illustration with scripted control and measured geometric seating. Quantitative CarryQ results and recorded policy comparisons are shown separately above and below.</p></section>}
-function Gallery(){const [filter,setFilter]=useState('All');return <section className="section wrap" id="gallery"><SectionHead n="05 · Recorded comparisons" title="See the difference in execution.">Selected Memoryless-failure / CarryQ-success pairs, shown side by side with matched cameras.</SectionHead><div className="tabs">{['All','Replay','Closed-loop'].map(f=><button key={f} aria-pressed={filter===f} onClick={()=>setFilter(f)}>{f}</button>)}</div><div className="video-grid">{videos.filter(v=>filter==='All'||v.group===filter).map(v=><div key={v.file}><Video item={v}/><p className="caption">{v.group==='Replay'?'Matched recorded-source replay.':v.source_id.startsWith('robotwin')?'Separate paired SeedPolicy qualitative recording.':'Saved paired closed-loop execution.'} 4-bit encoding · complete export at 20 fps.</p></div>)}</div></section>}
+const resultSets = {
+  Replay: {
+    note: 'Fixed-source replay on six sensitivity-selected LIBERO tasks, conditioned on successful continuous references. Each pair shares source commands, codewords, decoder and budget.',
+    rows: [['Scalar', 66.08, 96.04, 'Gain 95% CI [27.27, 32.68] pp'], ['Vector codebook', 70.13, 78.97, 'Gain 95% CI [5.07, 12.59] pp'], ['Native Praxis', 64.34, 95.01, 'Gain 95% CI [28.46, 32.84] pp']]
+  },
+  'Additional tasks': {
+    note: 'Twelve independently selected LIBERO tasks. Unconditional task-balanced success over 120 demonstrations at 4 and 6 bits.',
+    rows: [['12-task extension', 58.75, 92.92, '141 → 223 successes / 240 conditions']]
+  },
+  'Closed-loop': {
+    note: 'Frozen policies, paired initial states and per-arm replanning. Each row retains its own action interface and evaluation protocol.',
+    rows: [['OpenVLA-OFT · Spatial', 98.75, 100, '80 initial states; gain CI [0.00, 3.75] pp'], ['OpenVLA-OFT · Pro', 95, 97.5, '80 initial states; gain CI [−2.50, 7.50] pp'], ['OpenVLA-OFT · Plus', 78.75, 83.75, '80 initial states; gain CI [−3.75, 13.75] pp'], ['SeedPolicy · RoboTwin', 20.83, 33.33, '25 → 40 / 120; six settings'], ['robomimic · Can', 52.25, 57.75, '209 → 231 / 400; confirmation cohort']]
+  }
+};
+function Bars({
+  rows
+}) {
+  return <div className="bars">{rows.map(([label, ml, cq, detail]) => <div className="bar-row" key={label}><div className="bar-label"><strong>{label}</strong><span>+{fmt(cq - ml)} pp</span></div><div className="bar-track" title={`Memoryless ${fmt(ml)}%`}><span className="bar ml" style={{
+          width: ml + '%'
+        }} /><b>{fmt(ml)}%</b></div><div className="bar-track" title={`CarryQ ${fmt(cq)}%`}><span className="bar cq" style={{
+          width: cq + '%'
+        }} /><b>{fmt(cq)}%</b></div><p>{detail}</p></div>)}</div>;
+}
+function Results() {
+  const [tab, setTab] = useState('Replay'),
+    [table, setTable] = useState(false),
+    [bits, setBits] = useState(8);
+  const data = resultSets[tab];
+  const fine = ['USB-C', 'Charger'].map(task => {
+    const get = m => insertion.find(r => +r.bits === bits && r.task === task && r.method === m);
+    return [task, +get('Memoryless').s2_pct, +get('CarryQ').s2_pct, `${get('Memoryless').s2_successes} → ${get('CarryQ').s2_successes} / 120 episodes`];
+  });
+  return <><section id="results" className="wrap section"><SectionHead n="Execution evidence" title="Execution across tokenizers, tasks and policies">A shared interface isolates what temporal encoding changes.</SectionHead><div className="tabs" role="tablist" aria-label="Evaluation setting">{Object.keys(resultSets).map(k => <button role="tab" aria-selected={tab === k} key={k} onClick={() => setTab(k)}>{k}</button>)}</div><div className="panel-surface result-panel"><div className="chart-top"><h3>Task success (%)</h3><button className="text-button" onClick={() => setTable(!table)}>{table ? 'Chart view' : 'Table view'}</button></div><div className="legend"><span className="baseline">Memoryless</span><span className="ours">CarryQ</span></div>{table ? <div className="table-scroll"><table><thead><tr><th>Setting</th><th>Memoryless</th><th>CarryQ</th><th>Gain</th></tr></thead><tbody>{data.rows.map(([name, a, b, note]) => <tr key={name}><td>{name}<small>{note}</small></td><td>{fmt(a)}%</td><td>{fmt(b)}%</td><td>+{fmt(b - a)} pp</td></tr>)}</tbody></table></div> : <Bars rows={data.rows} />}<p className="caption">{data.note}</p></div><div className="insertion-result"><div><div className="eyebrow">Fine insertion · OpenVLA-OFT</div><h3>Temporal feedback at finer precision.</h3><p>USB-C and two-blade charger insertion with Franka Panda in MuJoCo. Each method uses 120 episodes per task and bit width.</p><div className="tabs" aria-label="Insertion bit width">{[8, 6, 4].map(b => <button key={b} aria-pressed={bits === b} onClick={() => setBits(b)}>{b} bits</button>)}</div><p className="small">H = 8 · K = 4 · 10 Hz<br />S2: completed insertion</p></div><div className="panel-surface"><Bars rows={fine} /></div></div></section></>;
+}
+function Real() {
+  const [bits, setBits] = useState(6),
+    [stage, setStage] = useState('insertion_power_pct');
+  const ml = real.find(r => r.method === 'Memoryless' && +r.bits_per_coordinate === bits),
+    cq = real.find(r => r.method === 'CarryQ' && +r.bits_per_coordinate === bits);
+  return <section className="section wrap" id="real"><SectionHead n="Real robot" title="Real-robot charging connector insertion">Charging connector insertion on PiPER with π₀.₅. The goal is complete insertion into a power strip, verified by electrical connection.</SectionHead><div className="real-photos">{[1, 2, 3].map(i => <figure key={i}><img loading="lazy" src={file(`media/real-${i}.jpg`)} alt={['Real PiPER arm approaching the power strip', 'Charging connector aligned with the socket', 'Charging connector successfully inserted'][i - 1]} /><figcaption><span>0{i}</span>{['Approach', 'Align', 'Insert'][i - 1]}</figcaption></figure>)}</div><div className="real-result panel-surface"><div><h3>One policy. A different encoding rule.</h3><p>50 trials per configuration · 10 Hz · K = 4</p><div className="tabs">{[4, 6].map(b => <button key={b} aria-pressed={bits === b} onClick={() => setBits(b)}>{b} bits</button>)}</div><label className="sr-only" htmlFor="real-stage">Outcome stage</label><select id="real-stage" value={stage} onChange={e => setStage(e.target.value)}><option value="insertion_power_pct">S2 · Insertion & power</option><option value="alignment_pct">S1 · Alignment</option></select></div><div className="real-stat"><span className="baseline">Memoryless</span><strong>{ml[stage]}<small>%</small></strong></div><span className="stat-arrow">→</span><div className="real-stat"><span className="ours">CarryQ</span><strong>{cq[stage]}<small>%</small></strong></div></div><p className="caption">The encoders share joint-target differencing, integration and low-level control. Continuous execution achieves 18% S2 success. Full controls and trial counts are in the supplement.</p></section>;
+}
+function Gallery() {
+  const [filter, setFilter] = useState('All');
+  return <section className="section wrap" id="gallery"><SectionHead n="Video gallery" title="Recorded task comparisons">Selected Memoryless-failure / CarryQ-success pairs, shown side by side with matched cameras.</SectionHead><div className="tabs">{['All', 'Replay', 'Closed-loop'].map(f => <button key={f} aria-pressed={filter === f} onClick={() => setFilter(f)}>{f}</button>)}</div><div className="video-grid">{videos.filter(v => filter === 'All' || v.group === filter).map(v => <div key={v.file}><Video item={v} /><p className="caption">{v.group === 'Replay' ? 'Matched recorded-source replay.' : v.source_id.startsWith('robotwin') ? 'Separate paired SeedPolicy qualitative recording.' : 'Saved paired closed-loop execution.'} 4-bit encoding · complete export at 20 fps.</p></div>)}</div></section>;
+}
 function VideoSelector() {
   const [selected, setSelected] = useState(videos[6]);
-  return (
-    <div className="video-selector">
+  return <div className="video-selector">
       <Video key={selected.file} item={selected} hero />
       <div className="video-playlist" role="group" aria-label="Recorded comparison task">
         <h2>Execution comparisons</h2>
-        {videos.map(item => (
-          <button key={item.file} aria-pressed={item.file === selected.file}
-            onClick={() => setSelected(item)}>
+        {videos.map(item => <button key={item.file} aria-pressed={item.file === selected.file} onClick={() => setSelected(item)}>
             <span>{item.title}</span><span aria-hidden="true">▷</span>
-          </button>
-        ))}
+          </button>)}
       </div>
-    </div>
-  );
+    </div>;
 }
-
 function MethodSection() {
-  return (
-    <section className="section wrap" id="method">
-      <SectionHead n="Method" title="Residual feedback inside the action encoder">
-        CarryQ uses the previous step's residual when choosing the next token.
-        The source policy, codebook, decoder and execution schedule stay fixed within each comparison.
+  return <section className="section wrap" id="method">
+      <SectionHead n="Method" title="Carry error forward through the token sequence">
+        CarryQ uses the residual from earlier choices to adjust the next quantizer input.
+        A short memory state lets successive errors compensate within the same action interface.
       </SectionHead>
       <Architecture />
-      <div className="method-sequence">
-        <h3>How feedback travels across actions</h3>
-        <PaperFigure name="residual-feedback.png"
-          alt="Three action steps showing residuals passed between scalar quantizers, and a reset at the window boundary"
-          caption="The CarryQ row uses the same codewords as Memoryless. The residual changes which codeword is selected and is cleared at the window boundary." />
+      <div className="method-concepts">
+        <article><h3>Residual addition</h3><p>The previous discrepancy adjusts the next source command before token selection.</p></article>
+        <article><h3>Fixed action interface</h3><p>The vocabulary, decoder and token budget stay matched within each comparison.</p></article>
+        <article><h3>Window-level feedback</h3><p>Carry the remaining residual across executed actions and reset at the next chunk or query.</p></article>
       </div>
-      <h3 className="method-explorer-title">Inspect the token choices</h3>
+      <div className="mechanism-heading">
+        <h3>Follow every codeword choice</h3>
+        <p>Change the increment or reset length, then scrub across actions to inspect the residual.</p>
+      </div>
       <Mechanism />
-      <div className="identity">
-        <span className="equation">T = L + X</span>
+      <div className="integration-panel">
         <div>
-          <h3>Local error and its interaction across time</h3>
-          <p>Opposing errors contribute a negative cross-time term X. This can offset a larger local error L and reduce the squared endpoint error T. <a href="#analysis">See the measured decomposition</a>.</p>
+          <h3>Prediction-time encoding</h3>
+          <p>Completed policy predictions feed into CarryQ before control.</p>
+          <div className="integration-flow"><span>Policy chunk</span><i>→</i><span className="highlight">CarryQ</span><i>→</i><span>Decode</span><i>→</i><span>Execute K</span></div>
+          <small>OpenVLA-OFT · Can · SeedPolicy · π₀.₅ + PiPER</small>
+        </div>
+        <div>
+          <h3>Encoded training targets</h3>
+          <p>CarryQ also constructs labels for a token-predicting policy.</p>
+          <div className="integration-flow"><span>Source actions</span><i>→</i><span className="highlight">CarryQ labels</span><i>→</i><span>Train policy</span></div>
+          <small>BAR-Smol with native Praxis tokens</small>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 }
-function App(){return <><a className="skip" href="#main">Skip to content</a><nav className="nav"><div className="wrap nav-inner"><a className="brand" href="#"><Mark/>CarryQ</a><div className="nav-links">{links.map(([id,text])=><a key={id} href={'#'+id}>{text}</a>)}</div></div></nav><main id="main"><header className="hero wrap"><div className="eyebrow">Robot action tokenization · Anonymous research</div><h1>Beyond Pointwise Accuracy:<br/><span>Temporal Error Structure</span><br/>in Robot Action Tokenization</h1><p className="hero-lead">Small errors add up. <em>CarryQ makes them compensate.</em></p><p className="hero-description">Temporal residual feedback improves the execution of discrete robot actions while preserving the codebook, decoder and token budget.</p><div className="resource-buttons"><a className="button primary" href={supplement}>Read supplementary material ↗</a><a className="button" href={codeLink}>Code ↗</a><a className="button" href="#demo">Explore live demo ↓</a></div><VideoSelector /><p className="caption">Recorded policy comparisons · Memoryless on the left, CarryQ on the right</p><div className="stats"><div><strong>66.08 → 96.04<span>%</span></strong><h3>Scalar replay success</h3><p>Six-task LIBERO · shared commands</p></div><div><strong>15.42 → 43.33<span>%</span></strong><h3>Simulated fine insertion</h3><p>8-bit · USB-C and charger mean</p></div><div><strong>16 → 42<span>%</span></strong><h3>Real-robot insertion & power</h3><p>6-bit · π₀.₅ + PiPER</p></div></div></header><section className="abstract wrap"><div className="eyebrow">The idea</div><p>A locally accurate action token can still be a poor choice for a sequence. When quantization errors repeatedly point in the same direction, cumulative commands drift. CarryQ uses the residual from earlier choices to guide the next token, letting errors compensate across time.</p></section><div className="wrap"><PaperFigure name="temporal-bias.png" className="motivation-figure"
-  alt="Charger alignment illustration showing how memoryless rounding increases cumulative command error over eight actions"
-  caption="Small, repeated alignment commands can round in the same direction. In this eight-step example, requested displacement is 1.25 grid units and Memoryless decodes 4.00." /></div><MethodSection /><Real/><Results/><TemporalEvidence/><Demo/><Gallery/><section className="section wrap resources" id="resources"><SectionHead n="Resources" title="Inspect the method and evidence."/><a className="button primary" href={supplement}>Supplementary PDF ↗</a><a className="button" href={codeLink}>Source code ↗</a><p className="caption">Beyond Pointwise Accuracy: Temporal Error Structure in Robot Action Tokenization</p></section></main><footer className="wrap"><a className="brand" href="#"><Mark/>CarryQ</a><span>Temporal Residual-Feedback Action Encoding</span></footer></>}
-createRoot(document.getElementById('root')).render(<App/>);
+function App() {
+  return <>
+    <a className="skip" href="#main">Skip to content</a>
+    <nav className="nav"><div className="wrap nav-inner">
+      <a className="brand" href="#"><Mark />CarryQ</a>
+      <div className="nav-links">{links.map(([id, label]) => <a key={id} href={"#" + id}>{label}</a>)}</div>
+    </div></nav>
+    <main id="main">
+      <header className="hero wrap">
+        <h1>Beyond Pointwise Accuracy:<br /><span>Temporal Error Structure in Robot Action Tokenization</span></h1>
+        <p className="hero-description">CarryQ · Temporal residual-feedback action encoding</p>
+        <div className="resource-buttons">
+          <a className="button primary" href={supplement}>Supplementary material ↗</a>
+          <a className="button" href={codeLink}>Code ↗</a>
+          <a className="button" href="#method">Method ↓</a>
+          <span className="anonymous-label">Anonymous submission</span>
+        </div>
+        <Workcell />
+        <div className="stats">
+          <div><strong>66.08 → 96.04<span>%</span></strong><h3>Scalar replay success</h3><p>Six LIBERO tasks · shared commands</p></div>
+          <div><strong>15.42 → 43.33<span>%</span></strong><h3>Simulated fine insertion</h3><p>8-bit · USB-C and charger mean</p></div>
+          <div><strong>16 → 42<span>%</span></strong><h3>Real insertion and power</h3><p>6-bit · π₀.₅ + PiPER</p></div>
+        </div>
+      </header>
+      <section className="section wrap" id="comparisons">
+        <SectionHead n="Recorded execution" title="Compare Memoryless and CarryQ">
+          Paired examples across action tokenizers and policy sources.
+        </SectionHead>
+        <VideoSelector />
+      </section>
+      <section className="section wrap" id="motivation">
+        <SectionHead n="The problem" title="Small rounding errors can persist">
+          Fine alignment often requires repeated small increments. When their encoding errors point in the same direction, the cumulative command diverges.
+        </SectionHead>
+        <PaperFigure name="temporal-bias.png" alt="The paper motivation figure showing repeated quantization bias during eight alignment steps" caption="In this eight-action example, the requested sum is 1.25 grid units and Memoryless decodes 4.00. The local error repeats, producing a larger cumulative discrepancy." />
+      </section>
+      <MethodSection />
+      <TemporalEvidence />
+      <Real />
+      <Results />
+      <Gallery />
+      <section className="section wrap resources">
+        <SectionHead n="Resources" title="Inspect the method and evidence" />
+        <a className="button primary" href={supplement}>Supplementary PDF ↗</a>
+        <a className="button" href={codeLink}>Source code ↗</a>
+      </section>
+    </main>
+    <footer className="wrap"><a className="brand" href="#"><Mark />CarryQ</a><span>Temporal residual-feedback action encoding</span></footer>
+  </>;
+}
+createRoot(document.getElementById('root')).render(<App />);

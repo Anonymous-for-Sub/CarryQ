@@ -113,8 +113,9 @@ handling, vector lookup and invalid inputs. See [CONTRIBUTING.md](CONTRIBUTING.m
 [Explore the project page](https://anonymous-for-sub.github.io/CarryQ/):
 recorded Memoryless–CarryQ comparisons, interactive residual-feedback arithmetic,
 simulation and real-robot results, and an embedded two-arm insertion workcell.
-The workcell loads within the same page and supports task selection, playback,
-reset and seven camera views. It illustrates scripted MuJoCo insertion; the
+The first-screen workcell opens as a compact recorded 3D scene with orbit, seek,
+playback and task/view selection. Live physics in the same area provides the
+original MuJoCo controller and seven camera views. It illustrates scripted MuJoCo insertion; the
 separate recorded videos show policy comparisons.
 
 The React source is in `web/`; its static build is served from `docs/`.

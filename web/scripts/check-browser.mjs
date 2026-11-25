@@ -25,7 +25,7 @@ try {
     waitUntil: "domcontentloaded",
     timeout: 120000,
   });
-  await page.getByRole('button', {name: /Launch live workcell/}).click();
+  await page.getByRole('button', {name: "Live physics", exact: true}).click();
   await page.locator('.demo-stage').scrollIntoViewIfNeeded();
   await page.waitForFunction(
     () =>

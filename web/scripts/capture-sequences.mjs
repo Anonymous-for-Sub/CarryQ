@@ -14,7 +14,7 @@ page.on('response', r => { if (r.status() >= 400) errors.push(`${r.status()} ${r
 const url = new URL(process.argv[2]); url.searchParams.set('capture', '1');
 try {
   await page.goto(url.href, { waitUntil: 'domcontentloaded', timeout: 120000 });
-  await page.getByRole('button', { name: /Launch live workcell/ }).click();
+  await page.getByRole('button', { name: "Live physics", exact: true }).click();
   await page.locator('.demo-stage').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => window.__taskCapture && document.querySelector('[role=status]')?.textContent.startsWith('Ready'), null, { timeout: 120000 });
   console.log('Scene ready.');

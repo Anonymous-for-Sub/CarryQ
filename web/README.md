@@ -2,7 +2,8 @@
 
 The React page combines an interactive encoding example, paper results,
 real-robot photographs, eight recorded comparison videos and the insertion
-workcell. The workcell is a lazily loaded React component on the same page;
+workcell. The first-screen scene loads a compact recorded 3D model automatically.
+Live physics is a lazily loaded React component in that same area;
 there is no iframe or separate demo route. Colors center on `#8080FF`.
 
 The scene reuses the Franka Panda MJCF and meshes, MuJoCo React loading/rendering,
@@ -40,6 +41,26 @@ check. This is a task illustration, not a learned policy or electrical simulatio
 Each task includes an offset approach, coarse registration, lateral centering,
 final alignment and insertion. The curved cable meshes are presentation geometry
 updated from the connector pose, not a flexible-body cable simulation.
+
+## Recorded 3D export
+
+Given a saved-state JSON from the capture workflow, start the site and run:
+
+```sh
+node scripts/export-workcell.mjs http://localhost:36832/CarryQ/ states.json recording.json
+python3 scripts/pack-recording.py recording.json public/media/workcell.json.gz
+```
+
+The exporter preserves the rendered geometry as BufferGeometry, world poses,
+materials and per-state cable geometry. The packer deduplicates geometry and
+stores exact Float32 attributes as binary data. Source state hashes are retained.
+The recorded viewer renders and interpolates saved poses. Its loading poster is
+a capture of the same initial workcell. The original MuJoCo mode remains
+available through the mode selector.
+
+The paper architecture is in `src/figures/paper-architecture.svg`. It is a direct
+vector export with outlined text, and detail highlights are separate overlays.
+The public copy in `public/figures/` is available for visual comparison.
 
 ## Cameras and process figures
 
