@@ -16,8 +16,8 @@ const paper = file('paper.pdf');
 const supplement = import.meta.env.VITE_SUPPLEMENTARY === 'true' ? '../appendix.pdf' : file('appendix.pdf');
 const fmt = n => Number(n).toFixed(2);
 const links = [['demo', 'Demo'], ['method', 'Method'], ['real', 'Real robot'], ['results', 'Results'], ['analysis', 'Analysis'], ['gallery', 'Videos']];
-function Mark() {
-  return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 22V9h7v13h7V9h8" /><circle cx="5" cy="22" r="2" /><circle cx="27" cy="9" r="2" /></svg>;
+function Wordmark() {
+  return <><span className="wordmark-carry">Carry</span><span className="wordmark-q">Q</span></>;
 }
 function Video({
   item,
@@ -173,7 +173,7 @@ function App() {
   return <>
     <a className="skip" href="#main">Skip to content</a>
     <nav className="nav"><div className="wrap nav-inner">
-      <a className="brand" href="#"><Mark />CarryQ</a>
+      <a className="brand wordmark" href="#" aria-label="CarryQ"><Wordmark /></a>
       <div className="nav-links">{links.map(([id, label]) => <a key={id} href={"#" + id}>{label}</a>)}</div>
     </div></nav>
     <main id="main">
@@ -214,7 +214,7 @@ function App() {
       <Gallery />
       <Citation />
     </main>
-    <footer className="wrap"><a className="brand" href="#"><Mark />CarryQ</a><span>Temporal residual-feedback action encoding</span></footer>
+    <footer className="wrap"><a className="brand wordmark" href="#" aria-label="CarryQ"><Wordmark /></a><span>Temporal residual-feedback action encoding</span></footer>
   </>;
 }
 createRoot(document.getElementById('root')).render(<App />);

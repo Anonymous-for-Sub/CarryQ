@@ -2,6 +2,11 @@
 .hero-intro { padding: 66px 0 58px; }
 .hero-intro h1 { line-height: 1.18; }
 .hero-intro .resource-buttons { margin: 24px 0 0; }
+.hero .hero-description { font-size: 22px; line-height: 1.45; font-weight: 450; }
+.brand.wordmark { gap: 0; font: italic 700 32px/1 Georgia, "Times New Roman", serif; letter-spacing: -.065em; font-kerning: normal; }
+.wordmark-carry { color: #f0f1f6; }
+.wordmark-q { color: var(--primary); font-size: 1.09em; margin-left: 2px; }
+footer .brand.wordmark { font-size: 28px; }
 .publication-people { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 24px; margin: 19px 0 0; font-size: 14px; }
 .publication-people span + span { color: #8d98ae; }
 .recorded-canvas, .demo-stage { background: #242a36; }
@@ -114,6 +119,8 @@
   .codeword-explorer .mechanism { grid-template-columns: 1fr; }
 }
 @media(max-width:600px) {
+  .brand.wordmark { font-size: 28px; }
+  .hero .hero-description { font-size: 17px; }
   .hero-intro { padding: 43px 0 35px; }
   .publication-people { font-size: 12px; gap: 3px 15px; margin-top: 18px; }
   .hero-intro .resource-buttons { margin-top: 21px; }
