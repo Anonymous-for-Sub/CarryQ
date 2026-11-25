@@ -59,6 +59,8 @@ try {
       meshes.push({
         original: o,
         clone,
+        cableKind:o.userData.cableKind,
+        geomName:capture.geomName(o),
         frames: [],
         geometries: []
       });
@@ -70,7 +72,7 @@ try {
         const object = m.original;
         object.matrixWorld.decompose(m.clone.position, m.clone.quaternion, m.clone.scale);
         m.frames.push([...m.clone.position.toArray(), ...m.clone.quaternion.toArray()]);
-        if (object.geometry !== m.geometryRef) {
+        if (!m.cableKind && object.geometry !== m.geometryRef) {
           m.geometryRef = object.geometry;
           const geometry = plainGeometry(object.geometry);
           m.geometries.push({
@@ -100,6 +102,11 @@ try {
     }
     window.__exportedScene = {
       object: clone.toJSON(),
+      cables:{
+        usb:meshes.find(mesh=>mesh.cableKind==="usb").clone.name,
+        power:meshes.find(mesh=>mesh.cableKind==="power").clone.name,
+        usbAnchor:meshes.find(mesh=>mesh.geomName==="usb_strain_relief").clone.name,
+      },
       handFrames,
       times: [0, ...states.map(s => s.snapshot.time)],
       labels: [{

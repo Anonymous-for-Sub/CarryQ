@@ -129,3 +129,11 @@ No action or collision geometry is changed.
 The temporal analysis shows both bit widths and both reset plots directly.
 The motivation view includes a local eight-action view using the same computed
 values as its global curve.
+
+`cableGeometry.js` generates cable buffers from the current connector pose.
+Recorded playback updates them at every displayed time, including direct and
+backward seeks. `cables` in the recording identifies both cable meshes and
+the USB strain-relief anchor. Export preserves these roles and robot poses;
+cable snapshots are unnecessary. Tests check endpoint attachment, buffer reuse,
+bench clearance and separation from the insertion fixtures across saved-pose
+intervals. `PlayOverlay.jsx` provides the shared initial playback control.

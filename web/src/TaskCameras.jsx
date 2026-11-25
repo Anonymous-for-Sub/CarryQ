@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMujoco, findBodyByName, findGeomByName } from "mujoco-react";
+import { useMujoco, findBodyByName, findGeomByName, getName } from "mujoco-react";
 import * as THREE from "three";
 import { CAMERA_SPECS, createCameraRig, loadCameraModels, renderCameraViews } from "./cameraRig.js";
 import { loadWorkcellSurfaces, applyWorkcellSurface } from "./workcellSurfaces.js";
@@ -43,6 +43,10 @@ export function TaskCameras({view}) {
     if(!rig||sim.status!=="ready"||!new URLSearchParams(location.search).has("capture"))return;
     window.__taskCapture={
       specs:CAMERA_SPECS,scene,handPoses,
+      geomName:object=>{
+        const id=object.userData.geomID,model=sim.mjModelRef.current;
+        return id===undefined?null:getName(model,model.name_geomadr[id]);
+      },
       pause:()=>sim.api.setPaused(true),
       restore:snapshot=>sim.api.restoreState(snapshot),
       render:(key,width=1600,height=1200)=>{

@@ -53,9 +53,9 @@ try {
   await reset.screenshot({path:folder+'/reset-response.png'});
 
   await page.locator('#real').screenshot({path:folder+'/real.png'});
-  assert.equal(await page.locator('.real-bit-card').count(),2);
-  assert.match(await page.getByRole('article',{name:'4-bit real robot results',exact:true}).innerText(),/36/);
-  assert.match(await page.getByRole('article',{name:'6-bit real robot results',exact:true}).innerText(),/42/);
+  assert.equal(await page.locator('.real-results-table tbody tr').count(),2);
+  assert.match(await page.getByRole('row',{name:'4-bit real robot results',exact:true}).innerText(),/36/);
+  assert.match(await page.getByRole('row',{name:'6-bit real robot results',exact:true}).innerText(),/42/);
   const boxes=await page.locator('.evaluation-card').evaluateAll(elements=>elements.map(element=>({left:element.getBoundingClientRect().left,top:element.getBoundingClientRect().top})));
   assert.equal(boxes.length,3);
   assert.ok(Math.abs(boxes[0].left-boxes[1].left)<2 && boxes[1].top>boxes[0].top);

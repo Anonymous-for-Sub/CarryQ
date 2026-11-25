@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {unpackGeometry,loadPackedJson,loadCameraModels,createCameraRig,renderCameraViews} from "./cameraRig.js";
 import { WORKCELL_COLORS } from "./workcellAppearance.js";
 import { loadWorkcellSurfaces, applyWorkcellSurface } from "./workcellSurfaces.js";
+import { CABLE_RADII, createCableGeometry, updateCableGeometry, usbCablePoints, powerCablePoints, handPoseFromCableAnchor } from "./cableGeometry.js";
 
 export async function createRecordedWorkcell(container, { signal, onTime, onReady }) {
   const [recording, assets, surfaces] = await Promise.all([
@@ -18,7 +19,13 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   model.traverse((object) => objects.set(object.name, object));
   applyWorkcellSurface(objects.get("mesh_0"),"floor",surfaces);
   applyWorkcellSurface(objects.get("mesh_1"),"mat",surfaces);
-  const animated = recording.meshes.filter((item) => item.frames.length > 1 || item.geometryFrames.length).map((item) => {
+  const cableRoles=recording.cables || {usb:"mesh_204",power:"mesh_205",usbAnchor:"mesh_58"};
+  const usbCable=objects.get(cableRoles.usb),powerCable=objects.get(cableRoles.power),usbAnchor=objects.get(cableRoles.usbAnchor);
+  const connectorPose=()=>handPoseFromCableAnchor(usbAnchor.position.toArray(),usbAnchor.quaternion.toArray());
+  usbCable.geometry.dispose();powerCable.geometry.dispose();
+  usbCable.geometry=createCableGeometry(usbCablePoints(connectorPose()),CABLE_RADII.usb);
+  powerCable.geometry=createCableGeometry(powerCablePoints(),CABLE_RADII.power);
+  const animated = recording.meshes.filter(item=>![cableRoles.usb,cableRoles.power].includes(item.name) && (item.frames.length > 1 || item.geometryFrames.length)).map((item) => {
     const object = objects.get(item.name);
     const geometries = item.geometryFrames.map(({index, geometry}) => {
       unpackGeometry(geometry);
@@ -30,7 +37,7 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
   const scene = new THREE.Scene();
   scene.add(rig.root);
   scene.background = new THREE.Color(WORKCELL_COLORS.background);
-  scene.add(model, new THREE.HemisphereLight("#ffffff", "#9a9c9b", 2.1));
+  scene.add(model, new THREE.HemisphereLight("#ffffff", "#9a9c9b", 2.35));
   const light = new THREE.DirectionalLight("#ffffff", 2.0);
   light.position.set(1, -2, 5);
   light.castShadow = true;
@@ -95,6 +102,7 @@ export async function createRecordedWorkcell(container, { signal, onTime, onRead
       const geometry = item.geometries.findLast((frame) => frame.index <= index);
       if (geometry) item.object.geometry = geometry.geometry;
     }
+    updateCableGeometry(usbCable.geometry,usbCablePoints(connectorPose()),CABLE_RADII.usb);
     if(recording.handFrames){
       const a=recording.handFrames[index],b=recording.handFrames[index+1];
       const hands={};

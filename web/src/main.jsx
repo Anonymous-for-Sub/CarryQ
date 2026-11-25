@@ -95,17 +95,15 @@ function Real() {
   return <section className="section wrap" id="real">
     <SectionHead n="Real robot" title="Real-robot charging connector insertion">Charging connector insertion on PiPER with π₀.₅. The goal is complete insertion into a power strip, verified by electrical connection.</SectionHead>
     <div className="real-photos">{[1,2,3].map(i=><figure key={i}><img loading="lazy" src={file(`media/real-${i}.jpg`)} alt={['Real PiPER arm approaching the power strip','Charging connector aligned with the socket','Charging connector successfully inserted'][i-1]}/><figcaption><span>0{i}</span>{['Approach','Align','Insert'][i-1]}</figcaption></figure>)}</div>
-    <div className="real-result-head"><h3>One policy. A different encoding rule.</h3><p>50 trials per configuration · 10 Hz · K = 4</p></div>
-    <div className="real-bit-grid">{[4,6].map(bits=>{
-      const ml=real.find(row=>row.method==='Memoryless' && +row.bits_per_coordinate===bits);
-      const cq=real.find(row=>row.method==='CarryQ' && +row.bits_per_coordinate===bits);
-      return <article className="real-bit-card panel-surface" key={bits} aria-label={`${bits}-bit real robot results`}>
-        <div className="real-bit-heading"><h4>{bits}-bit encoding</h4><span>+{+cq.insertion_power_pct-ml.insertion_power_pct} pp</span></div>
-
-        <div className="real-comparison"><div className="real-stat"><span className="baseline">Memoryless</span><strong>{ml.insertion_power_pct}<small>%</small></strong></div><span className="stat-arrow">→</span><div className="real-stat"><span className="ours">CarryQ</span><strong className="ours">{cq.insertion_power_pct}<small>%</small></strong></div></div>
-        <div className="real-alignment"><span>S1 · Alignment</span><span><b className="baseline">{ml.alignment_pct}%</b><i>→</i><b className="ours">{cq.alignment_pct}%</b></span></div>
-      </article>;
-    })}</div>
+    <div className="real-result-head"><h3>Real-robot success</h3><p>50 trials per method · 10 Hz · K = 4</p></div>
+    <div className="real-table-wrap"><table className="real-results-table" aria-label="Real robot completed insertion and alignment success rates">
+      <thead><tr><th>Bits</th><th>Memoryless</th><th>CarryQ</th><th>Gain</th><th>Alignment</th></tr></thead>
+      <tbody>{[4,6].map(bits=>{
+        const ml=real.find(row=>row.method==='Memoryless' && +row.bits_per_coordinate===bits);
+        const cq=real.find(row=>row.method==='CarryQ' && +row.bits_per_coordinate===bits);
+        return <tr key={bits} aria-label={`${bits}-bit real robot results`}><th>{bits}-bit</th><td className="baseline">{ml.insertion_power_pct}%</td><td className="ours">{cq.insertion_power_pct}%</td><td>+{+cq.insertion_power_pct-ml.insertion_power_pct} pp</td><td className="alignment-pair"><span>{ml.alignment_pct}%</span><i>→</i><span>{cq.alignment_pct}%</span></td></tr>;
+      })}</tbody>
+    </table></div>
   </section>;
 }
 
@@ -187,10 +185,11 @@ function App() {
           </div>
         </div>
         <Workcell />
-        <div className="stats">
-          <div><strong>66.08 → 96.04<span>%</span></strong><h3>Scalar replay success</h3><p>Six LIBERO tasks · shared commands</p></div>
-          <div><strong>15.42 → 43.33<span>%</span></strong><h3>Simulated fine insertion</h3><p>8-bit · USB-C and charger mean</p></div>
-          <div><strong>16 → 42<span>%</span></strong><h3>Real insertion and power</h3><p>6-bit · π₀.₅ + PiPER</p></div>
+        <div className="evidence-strip" aria-label="Memoryless to CarryQ success rates">
+          <span className="evidence-key">Memoryless → CarryQ</span>
+          <div title="Six LIBERO tasks with shared source commands"><span>Scalar replay</span><strong>66.08 → 96.04%</strong></div>
+          <div title="USB-C and charger mean, 8-bit encoding"><span>Simulated insertion, 8 bit</span><strong>15.42 → 43.33%</strong></div>
+          <div title="PiPER with π₀.₅, 6-bit encoding"><span>Real robot, 6 bit</span><strong>16 → 42%</strong></div>
         </div>
       </header>
       <section className="section wrap" id="comparisons">

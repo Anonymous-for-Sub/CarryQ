@@ -22,7 +22,8 @@ try {
   assert.ok(await page.locator(".recorded-canvas").evaluate((element) => element.getBoundingClientRect().top < innerHeight && element.getBoundingClientRect().height >= 600));
 
   const demo = page.locator("#demo");
-  await demo.getByRole("button", { name: "Play", exact: true }).click();
+  await demo.getByRole("button", { name: "Start recorded demonstration", exact: true }).click();
+  assert.equal(await demo.getByRole("button", { name: "Start recorded demonstration", exact: true }).count(),0);
   await page.waitForFunction(() => +document.querySelector("#scene-time").value > 0.3);
   await demo.getByRole("button", { name: "Pause", exact: true }).click();
   const time = await page.locator("#scene-time").inputValue();
@@ -30,6 +31,7 @@ try {
   assert.equal(await page.locator("#scene-time").inputValue(), time);
   await demo.getByRole("button", { name: "Reset", exact: true }).click();
   assert.equal(+(await page.locator("#scene-time").inputValue()), 0);
+  assert.equal(await demo.getByRole("button", { name: "Start recorded demonstration", exact: true }).count(),1);
   await page.locator("#playback-task").selectOption("charger");
   assert.ok(+(await page.locator("#scene-time").inputValue()) > 14);
   await page.locator("#playback-view").selectOption("charger");

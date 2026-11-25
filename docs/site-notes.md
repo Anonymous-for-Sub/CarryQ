@@ -33,7 +33,7 @@ quaternions are interpolated between those states. The browser supports orbit,
 zoom, seek, task selection, and close-up, external, wrist and setup views. It pauses rendering outside
 the viewport and while the tab is hidden.
 
-The packed scene is about 5.2 MB. Camera hardware uses a separate approximately 0.38 MB asset pack. The physics bundle and original OBJ assets
+The packed scene is about 4.7 MB. Camera hardware uses a separate approximately 0.38 MB asset pack. The physics bundle and original OBJ assets
 load when **Live physics** is selected. Both modes appear in the first-screen
 workcell. The original interactive MuJoCo mode retains its controls and views.
 
@@ -149,3 +149,18 @@ view adds a shaded command gap and an eight-action local view of requested and
 CarryQ cumulative commands. Both are derived from the same existing encoding
 calculation; no values are amplified or changed. Website reading text uses a
 more uniform type scale, with redundant labels removed.
+
+## Cable synchronization and playback
+
+Cable geometry is reconstructed on each displayed frame from the rendered
+connector pose, using the same interpolated time as the robot. The earlier
+held cable snapshots have been removed. A bench-height constraint and a route
+outside the insertion fixtures keep the visual curves clear of those surfaces.
+The saved robot poses and source-state hashes are unchanged. Live and recorded
+modes share the routing implementation. These remain presentation curves,
+without cable forces.
+
+The centered translucent Play control disappears on starting; reset restores it.
+Its invitation ring respects reduced-motion preferences. Ambient illumination
+has been increased slightly. Headline results use one compact strip, and the
+real-robot results use a two-row table with both bit widths and alignment.

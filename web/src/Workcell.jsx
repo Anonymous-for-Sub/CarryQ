@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 const LiveWorkcell = lazy(() => import("./InsertionDemo.jsx"));
 import CameraFeedLabels from "./CameraFeedLabels.jsx";
+import PlayOverlay from "./PlayOverlay.jsx";
 const base = import.meta.env.BASE_URL;
 function RecordedScene() {
   const container = useRef(null);
@@ -11,6 +12,7 @@ function RecordedScene() {
   const [phase, setPhase] = useState("Loading recorded scene…");
   const [error, setError] = useState("");
   const [playing, setPlaying] = useState(false);
+  const [started,setStarted] = useState(false);
   const [task, setTask] = useState("both");
   const [view, setView] = useState("overview");
   useEffect(() => {
@@ -51,6 +53,7 @@ function RecordedScene() {
       <div className="recorded-canvas" ref={container}>
         {!ready && <img className="workcell-poster" src={base + "media/workcell-poster.jpg"} alt="Two Franka arms with USB-C and charger insertion fixtures" />}
         {!ready && <span className="scene-load" role="status">{error || "Loading 3D scene…"}</span>}
+        {ready && !started && <PlayOverlay onPlay={()=>{player.current.play(true);setPlaying(true);setStarted(true);}}/>}
         <CameraFeedLabels onSelect={key=>{setView(key);player.current?.setView(key);}} />
         <span className="orbit-hint">Drag to rotate · Scroll to zoom</span>
       </div>
@@ -83,12 +86,14 @@ function RecordedScene() {
         <div className="actions">
           <button className="primary" disabled={!ready} onClick={() => {
           player.current.play(!playing);
+          if(!playing)setStarted(true);
           setPlaying(!playing);
         }}>{playing ? "Pause" : "Play"}</button>
           <button disabled={!ready} onClick={() => {
           player.current.play(false);
           player.current.reset();
           setPlaying(false);
+          setStarted(false);
         }}>Reset</button>
         </div>
         <span className="playback-phase" role="status">{phase}</span>

@@ -28,6 +28,7 @@ import { Cables } from "./Cables.jsx";
 import { TaskCameras } from "./TaskCameras.jsx";
 import CameraFeedLabels from "./CameraFeedLabels.jsx";
 import { WORKCELL_COLORS } from "./workcellAppearance.js";
+import PlayOverlay from "./PlayOverlay.jsx";
 
 
 const config = {
@@ -286,11 +287,13 @@ export default function InsertionDemo() {
   const [command, setCommand] = useState({ id: 0, task: "both" });
   const [details, setDetails] = useState(false);
   const [activeTask, setActiveTask] = useState(null);
+  const [started,setStarted] = useState(false);
   const finish = () => {
     setRunning(false);
     setPaused(false);
   };
   const reset = () => {
+    setStarted(false);
     setRunning(false);
     setPaused(false);
     setReady(false);
@@ -300,6 +303,7 @@ export default function InsertionDemo() {
     setGeneration((g) => g + 1);
   };
   const play = () => {
+    setStarted(true);
     if (running) {
       setPaused((p) => !p);
       return;
@@ -342,7 +346,7 @@ export default function InsertionDemo() {
             onTask={setActiveTask}
           />
           <color attach="background" args={[WORKCELL_COLORS.background]} />
-          <ambientLight intensity={0.8} />
+          <ambientLight intensity={0.9} />
           <directionalLight
             position={[1, -2, 5]}
             intensity={1.7}
@@ -357,6 +361,7 @@ export default function InsertionDemo() {
           />
         </MujocoCanvas>
       </MujocoProvider>
+      {ready && !started && <PlayOverlay live onPlay={play}/>}
       <CameraFeedLabels onSelect={setView} />
       <section className="panel" aria-label="Insertion controls">
         <div className="title">Franka · Precision insertion</div>
